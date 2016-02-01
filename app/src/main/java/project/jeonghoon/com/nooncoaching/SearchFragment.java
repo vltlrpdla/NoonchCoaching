@@ -132,8 +132,10 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
     public void onMapViewInitialized(MapView mapView) {
         Log.i(LOG_TAG, "MapView had loaded. Now, MapView APIs could be called safely");
-
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
+        /*
         GeoCoordinate geoCoordinate = mMapView.getMapCenterPoint().getMapPointGeoCoord();
+
         mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(geoCoordinate.latitude, geoCoordinate.longitude), 2, true);
 
         Searcher searcher = new Searcher();
@@ -155,6 +157,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                 showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
             }
         });
+        */
     }
 
     private void showToast(final String text) {
