@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //GPS service cause of speed
-        Intent a = new Intent(this, GpsService.class);
-        startService(a);
+        Intent intentGpsService = new Intent(this, GpsService.class);
+        startService(intentGpsService);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

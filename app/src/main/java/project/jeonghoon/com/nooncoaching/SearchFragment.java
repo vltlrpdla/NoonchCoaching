@@ -40,6 +40,13 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     private EditText mEditTextQuery;
     private Button mButtonSearch;
     private HashMap<Integer, Item> mTagItemMap = new HashMap<Integer, Item>();
+    TextView nameView;
+    TextView telView;
+    TextView cateView;
+    TextView addrView;
+    ImageView cookImage;
+
+
 
     @Nullable
     @Override
@@ -53,7 +60,14 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         mMapView.setPOIItemEventListener(this);
         mMapView.setCalloutBalloonAdapter(new CustomCalloutBalloonAdapter());
 
-        mEditTextQuery = (EditText) rootView.findViewById(R.id.editTextQuery); // 검색창
+        nameView = (TextView)rootView.findViewById(R.id.nameView);
+        telView = (TextView)rootView.findViewById(R.id.telView);
+        cateView = (TextView)rootView.findViewById(R.id.cateView);
+        addrView = (TextView)rootView.findViewById(R.id.addrView);
+        cookImage = (ImageView)rootView.findViewById(R.id.cookImage);
+
+
+                mEditTextQuery = (EditText) rootView.findViewById(R.id.editTextQuery); // 검색창
 
         mButtonSearch = (Button) rootView.findViewById(R.id.buttonSearch); // 검색버튼
         mButtonSearch.setOnClickListener(new OnClickListener() { // 검색버튼 클릭 이벤트 리스너
@@ -91,7 +105,19 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                 Toast.makeText(getActivity().getApplicationContext(),"위도 = " + latitude + "\n경도 = " +longitude,Toast.LENGTH_LONG).show();
             }
         });
-
+/*
+        SelectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"선택 되었습니다.", Toast.LENGTH_SHORT).show();
+                Item in1 = MainActivity.ThemaItem.get(index);
+                DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
+                dbHandler.click_time();
+                dbHandler.food_favorite_insert();
+                dbHandler.close();
+            }
+        });
+*/
         return rootView;
     }
 
@@ -132,8 +158,8 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
     public void onMapViewInitialized(MapView mapView) {
         Log.i(LOG_TAG, "MapView had loaded. Now, MapView APIs could be called safely");
-        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
-        /*
+        //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
+
         GeoCoordinate geoCoordinate = mMapView.getMapCenterPoint().getMapPointGeoCoord();
 
         mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(geoCoordinate.latitude, geoCoordinate.longitude), 2, true);
@@ -157,7 +183,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                 showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
             }
         });
-        */
+
     }
 
     private void showToast(final String text) {
@@ -223,6 +249,18 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
         Item item = mTagItemMap.get(mapPOIItem.getTag());
+        nameView.setText(item.title);
+        cateView.setText(item.category);
+        addrView.setText(item.address);
+        telView.setText(item.phone);
+
+        if(item.imageUrl.equals("")){
+            item.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
+            new DownloadImageTask(cookImage).execute(item.imageUrl);
+        }else{
+            new DownloadImageTask(cookImage).execute(item.imageUrl);
+        }
+        /*
         StringBuilder sb = new StringBuilder();
         sb.append("title=").append(item.title).append("\n");
         sb.append("imageUrl=").append(item.imageUrl).append("\n");
@@ -236,6 +274,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         sb.append("distance=").append(item.distance).append("\n");
         sb.append("direction=").append(item.direction).append("\n");
         Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
+        */
     }
 
     @Override
@@ -282,5 +321,46 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int zoomLevel) {
     }
+/*
+    public void SetFoodViewItem(final int index){
+        Item in1 = MainActivity.ThemaItem.get(index);
+        MapPOIItem marker = new MapPOIItem();
+        nameTv.setText("" + in1.title);
+        telTv.setText("" + in1.phone);
+        cateTv.setText("" + in1.category);
+        addrTv.setText("" + in1.address);
+        if(in1.imageUrl.equals("")){
+            in1.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
+            new DownloadImageTask(foodImg).execute(in1.imageUrl);
+        }else{
+            new DownloadImageTask(foodImg).execute(in1.imageUrl);
+        }
+        telTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Item in1 = MainActivity.ThemaItem.get(index);
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + in1.phone));
+                startActivity(intent);
+            }
+        });
+        SelectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext,"선택 되었습니다.", Toast.LENGTH_SHORT).show();
+                Item in1 = MainActivity.ThemaItem.get(index);
+                DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
+                dbHandler.click_time();
+                dbHandler.food_favorite_insert();
+                dbHandler.close();
+            }
+        });
+        marker.setItemName("Default Marker");
+        marker.setTag(0);
+        marker.setMapPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude));
+        marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
+        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude), true);
+        mapView.addPOIItem(marker);
+    }
+    */
 
 }
