@@ -9,12 +9,17 @@ import android.view.ViewGroup;
 /**
  * Created by EOM on 2015-08-20.
  */
-public class Fragment1 extends Fragment {
+public class MySearchResFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment1, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_search_res, container, false);
+
 
         return rootView;
     }
+
+
+
+
 }

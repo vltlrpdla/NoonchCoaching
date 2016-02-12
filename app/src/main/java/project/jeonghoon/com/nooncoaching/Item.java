@@ -20,4 +20,28 @@ public class Item implements Serializable {
     public String placeUrl;
     public String direction;
     public String addressBCode;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

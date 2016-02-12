@@ -31,7 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-//위치 잡는 문제 해결하기
+// search Location problem,
 public class SearchFragment extends Fragment implements MapView.MapViewEventListener, MapView.POIItemEventListener {
 
     private static final String LOG_TAG = "SearchDemoActivity";
@@ -45,6 +45,8 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     TextView cateView;
     TextView addrView;
     ImageView cookImage;
+    Button bSaveRestaurant;
+    Item currentItem;
 
 
 
@@ -65,11 +67,13 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         cateView = (TextView)rootView.findViewById(R.id.cateView);
         addrView = (TextView)rootView.findViewById(R.id.addrView);
         cookImage = (ImageView)rootView.findViewById(R.id.cookImage);
+        bSaveRestaurant = (Button)rootView.findViewById(R.id.bSaveRestaurant);
 
-
-                mEditTextQuery = (EditText) rootView.findViewById(R.id.editTextQuery); // 검색창
+        mEditTextQuery = (EditText) rootView.findViewById(R.id.editTextQuery); // 검색창
 
         mButtonSearch = (Button) rootView.findViewById(R.id.buttonSearch); // 검색버튼
+
+        //검색 버튼 리스너
         mButtonSearch.setOnClickListener(new OnClickListener() { // 검색버튼 클릭 이벤트 리스너
             @Override
             public void onClick(View v) {
@@ -102,22 +106,40 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                         showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
                     }
                 });
-                Toast.makeText(getActivity().getApplicationContext(),"위도 = " + latitude + "\n경도 = " +longitude,Toast.LENGTH_LONG).show();
+                showToast("위도 = " + latitude + "\n경도 = " +longitude);
             }
         });
-/*
-        SelectBtn.setOnClickListener(new View.OnClickListener() {
+
+        //저장 버튼 리스너
+        bSaveRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(),"선택 되었습니다.", Toast.LENGTH_SHORT).show();
-                Item in1 = MainActivity.ThemaItem.get(index);
-                DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
-                dbHandler.click_time();
-                dbHandler.food_favorite_insert();
-                dbHandler.close();
+
+
+                if (currentItem == null) {
+                    showToast("아이템을 클릭해주세요");
+                }else {
+                    DBHandler dbHandler = DBHandler.open(getActivity(), currentItem);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("title=").append(currentItem.title).append("\n");
+                    sb.append("imageUrl=").append(currentItem.imageUrl).append("\n");
+                    sb.append("address=").append(currentItem.address).append("\n");
+                    sb.append("newAddress=").append(currentItem.newAddress).append("\n");
+                    sb.append("zipcode=").append(currentItem.zipcode).append("\n");
+                    sb.append("phone=").append(currentItem.phone).append("\n");
+                    sb.append("category=").append(currentItem.category).append("\n");
+                    sb.append("longitude=").append(currentItem.longitude).append("\n");
+                    sb.append("latitude=").append(currentItem.latitude).append("\n");
+                    sb.append("distance=").append(currentItem.distance).append("\n");
+                    sb.append("direction=").append(currentItem.direction).append("\n");
+                    dbHandler.click_time();
+                    dbHandler.food_search_insert();
+                    dbHandler.close();
+                    Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
-*/
+
         return rootView;
     }
 
@@ -248,33 +270,19 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
-        Item item = mTagItemMap.get(mapPOIItem.getTag());
-        nameView.setText(item.title);
-        cateView.setText(item.category);
-        addrView.setText(item.address);
-        telView.setText(item.phone);
+        currentItem = mTagItemMap.get(mapPOIItem.getTag());
+        nameView.setText(currentItem.title);
+        cateView.setText(currentItem.category);
+        addrView.setText(currentItem.address);
+        telView.setText(currentItem.phone);
 
-        if(item.imageUrl.equals("")){
-            item.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
-            new DownloadImageTask(cookImage).execute(item.imageUrl);
+        if(currentItem.imageUrl.equals("")){
+            currentItem.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
+            new DownloadImageTask(cookImage).execute(currentItem.imageUrl);
         }else{
-            new DownloadImageTask(cookImage).execute(item.imageUrl);
+            new DownloadImageTask(cookImage).execute(currentItem.imageUrl);
         }
-        /*
-        StringBuilder sb = new StringBuilder();
-        sb.append("title=").append(item.title).append("\n");
-        sb.append("imageUrl=").append(item.imageUrl).append("\n");
-        sb.append("address=").append(item.address).append("\n");
-        sb.append("newAddress=").append(item.newAddress).append("\n");
-        sb.append("zipcode=").append(item.zipcode).append("\n");
-        sb.append("phone=").append(item.phone).append("\n");
-        sb.append("category=").append(item.category).append("\n");
-        sb.append("longitude=").append(item.longitude).append("\n");
-        sb.append("latitude=").append(item.latitude).append("\n");
-        sb.append("distance=").append(item.distance).append("\n");
-        sb.append("direction=").append(item.direction).append("\n");
-        Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
-        */
+
     }
 
     @Override

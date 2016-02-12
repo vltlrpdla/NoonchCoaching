@@ -2,9 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="project.jeonghoon.com.nooncoaching.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+
+    <item android:id="@+id/action_websearch"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:showAsAction="ifRoom|withText" />
+
 </menu>

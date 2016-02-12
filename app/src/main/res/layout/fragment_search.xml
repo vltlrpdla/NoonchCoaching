@@ -57,7 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
+                    android:text="클릭하시면"
                     android:id="@+id/nameView"
                     android:singleLine="false"
                     android:layout_marginBottom="5dp"
@@ -65,21 +65,21 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
+                    android:text="자세한 정보와"
                     android:layout_marginBottom="5dp"
                     android:id="@+id/telView"
                     android:textSize="17dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
+                    android:text="전화를"
                     android:layout_marginBottom="5dp"
                     android:id="@+id/cateView"
                     android:textSize="17dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
+                    android:text="할 수 있습니다."
                     android:id="@+id/addrView"
                     android:textSize="17dp"/>
             </LinearLayout>
@@ -97,6 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text = "나의 음식 저장"
+        android:id = "@+id/bSaveRestaurant"
         android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

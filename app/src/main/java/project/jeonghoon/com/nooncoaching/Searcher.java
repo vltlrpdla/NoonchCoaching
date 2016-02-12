@@ -85,6 +85,8 @@ public class Searcher {
 		searchTask = new SearchTask();
 		searchTask.execute(url);
     }
+
+
 	
 	public void searchCategory(Context applicationContext, String categoryCode, double latitude, double longitude, int radius, int page, String apikey, OnFinishSearchListener onFinishSearchListener) {
 		this.onFinishSearchListener = onFinishSearchListener;
