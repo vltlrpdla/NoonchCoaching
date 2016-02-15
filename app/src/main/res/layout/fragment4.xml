@@ -4,10 +4,21 @@
     android:layout_height="match_parent"
     android:background="#96f3ff">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="네번째"
-        android:id="@+id/button" />
+    <Spinner
+        android:id="@+id/spinner1"
+        android:prompt="@string/spinnerPrompt1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>
