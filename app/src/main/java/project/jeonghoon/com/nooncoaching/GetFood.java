@@ -1,12 +1,18 @@
 package project.jeonghoon.com.nooncoaching;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.PrintWriter;
@@ -82,7 +88,7 @@ public class GetFood extends BroadcastReceiver {
         String param3 =  "tbName=anniv&col=food_name&SoL=L&date="+today_L;
 
         foodDbJson fD = new foodDbJson();
-        fD.execute(param,param2,param3);
+        fD.execute(param, param2, param3);
 
         try {
             Log.i("aaaa", "-----------------------------" + staticMerge.temp);
@@ -139,7 +145,36 @@ public class GetFood extends BroadcastReceiver {
             getItem(staticMerge.what);
         }
 
-
+        Notification(staticMerge.what);
 
     }
+
+
+    //푸쉬알람
+    public void Notification(String what) {
+
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Resources res = context.getResources();
+
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setTicker("맞춤 추천 도착!!");
+        builder.setWhen(System.currentTimeMillis());
+        builder.setContentTitle( what +"추천 도착!!");
+        builder.setContentText("추천 아이템 확인하려면 클릭하세요");
+        builder.setDefaults(Notification.DEFAULT_VIBRATE);
+        builder.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_launcher));
+        builder.setContentIntent(contentIntent);
+        builder.setNumber(1);
+        builder.setAutoCancel(true);
+
+
+
+        Notification n = builder.build();
+        nm.notify(1234, n);
+    }
+
 }
