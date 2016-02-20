@@ -88,6 +88,8 @@ public class RecommendFragment extends Fragment {
         mapView.setDaumMapApiKey("9db6272582177f1d7b0643e35e1993e9");
         mapViewContainer.addView(mapView);
 
+
+        SetFoodViewItem(0);
         TabLayout tabs = (TabLayout) rootView.findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("기념일"));
         tabs.addTab(tabs.newTab().setText("맞춤"));

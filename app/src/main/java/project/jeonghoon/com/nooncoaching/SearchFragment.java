@@ -2,7 +2,10 @@ package project.jeonghoon.com.nooncoaching;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -47,6 +50,13 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     ImageView cookImage;
     Button bSaveRestaurant;
     Item currentItem;
+    double latitude;
+    double longitude;
+    int radius = 1000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
+    int page = 1;
+    String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
+    String defaultImageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+
 
 
 
@@ -56,6 +66,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_search, container, false);
 
+        Log.i(LOG_TAG, "onCreateView had loaded. Now, MapView APIs could be called safely");
         mMapView = (MapView)rootView.findViewById(R.id.map_view);
         mMapView.setDaumMapApiKey(MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY);
         mMapView.setMapViewEventListener(this);
@@ -73,6 +84,12 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
         mButtonSearch = (Button) rootView.findViewById(R.id.buttonSearch); // 검색버튼
 
+        //MapView Initial by User location
+        LocationManager locationManager = (LocationManager) MainActivity.mContext.getSystemService(Context.LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
         //검색 버튼 리스너
         mButtonSearch.setOnClickListener(new OnClickListener() { // 검색버튼 클릭 이벤트 리스너
             @Override
@@ -83,15 +100,8 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                     return;
                 }
                 hideSoftKeyboard(); // 키보드 숨김
-                GeoCoordinate geoCoordinate = mMapView.getMapCenterPoint().getMapPointGeoCoord();
 
-                double latitude = geoCoordinate.latitude; // 위도
-                double longitude = geoCoordinate.longitude; // 경도
-
-
-                int radius = 1000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
-                int page = 1; // 페이지 번호 (1 ~ 3). 한페이지에 15개
-                String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
+                showToast("" + latitude);
 
                 Searcher searcher = new Searcher(); // net.daum.android.map.openapi.search.Searcher
                 searcher.searchKeyword(getActivity().getApplicationContext(), query, latitude, longitude, radius, page, apikey, new OnFinishSearchListener() {
@@ -99,7 +109,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                     public void onSuccess(List<Item> itemList) {
                         mMapView.removeAllPOIItems(); // 기존 검색 결과 삭제
                         showResult(itemList); // 검색 결과 보여줌
-                    }
+                }
 
                     @Override
                     public void onFail() {
@@ -182,27 +192,24 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         Log.i(LOG_TAG, "MapView had loaded. Now, MapView APIs could be called safely");
         //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
 
-        GeoCoordinate geoCoordinate = mMapView.getMapCenterPoint().getMapPointGeoCoord();
 
-        mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(geoCoordinate.latitude, geoCoordinate.longitude), 2, true);
 
+        mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(latitude, longitude), 2, true);
+
+        //initial query
         Searcher searcher = new Searcher();
         String query = mEditTextQuery.getText().toString();
-        double latitude = geoCoordinate.latitude;
-        double longitude = geoCoordinate.longitude;
-        int radius = 1000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
-        int page = 1;
-        String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
 
         searcher.searchKeyword(getActivity().getApplicationContext(), query, latitude, longitude, radius, page, apikey, new OnFinishSearchListener() {
             @Override
             public void onSuccess(final List<Item> itemList) {
                 showResult(itemList);
+
             }
 
             @Override
             public void onFail() {
-                showToast("API_KEY의 제한 트래픽이 초과되었습니다.");
+                showToast("검색된 아이템이 없습니다.");
             }
         });
 
@@ -223,6 +230,14 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         for (int i = 0; i < itemList.size(); i++) {
             Item item = itemList.get(i);
 
+
+            if ( i == 0 ){
+                currentItem = item;
+                setDetailView();
+            }
+            if(item.getImageUrl().equals("")){
+                item.setImageUrl(defaultImageUrl);
+            }
             MapPOIItem poiItem = new MapPOIItem();
             poiItem.setItemName(item.title);
             poiItem.setTag(i);
@@ -270,18 +285,6 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
-        currentItem = mTagItemMap.get(mapPOIItem.getTag());
-        nameView.setText(currentItem.title);
-        cateView.setText(currentItem.category);
-        addrView.setText(currentItem.address);
-        telView.setText(currentItem.phone);
-
-        if(currentItem.imageUrl.equals("")){
-            currentItem.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
-            new DownloadImageTask(cookImage).execute(currentItem.imageUrl);
-        }else{
-            new DownloadImageTask(cookImage).execute(currentItem.imageUrl);
-        }
 
     }
 
@@ -296,6 +299,8 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
     @Override
     public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
+        currentItem = mTagItemMap.get(mapPOIItem.getTag());
+        setDetailView();
     }
 
     @Override
@@ -329,46 +334,21 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int zoomLevel) {
     }
-/*
-    public void SetFoodViewItem(final int index){
-        Item in1 = MainActivity.ThemaItem.get(index);
-        MapPOIItem marker = new MapPOIItem();
-        nameTv.setText("" + in1.title);
-        telTv.setText("" + in1.phone);
-        cateTv.setText("" + in1.category);
-        addrTv.setText("" + in1.address);
-        if(in1.imageUrl.equals("")){
-            in1.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
-            new DownloadImageTask(foodImg).execute(in1.imageUrl);
-        }else{
-            new DownloadImageTask(foodImg).execute(in1.imageUrl);
-        }
-        telTv.setOnClickListener(new View.OnClickListener() {
+    public void setDetailView(){
+        getActivity().runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                Item in1 = MainActivity.ThemaItem.get(index);
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + in1.phone));
-                startActivity(intent);
+            public void run() {
+                nameView.setText(currentItem.title);
+                cateView.setText(currentItem.category);
+                addrView.setText(currentItem.address);
+                telView.setText(currentItem.phone);
+
+                currentItem.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+
             }
         });
-        SelectBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext,"선택 되었습니다.", Toast.LENGTH_SHORT).show();
-                Item in1 = MainActivity.ThemaItem.get(index);
-                DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
-                dbHandler.click_time();
-                dbHandler.food_favorite_insert();
-                dbHandler.close();
-            }
-        });
-        marker.setItemName("Default Marker");
-        marker.setTag(0);
-        marker.setMapPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude));
-        marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
-        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude), true);
-        mapView.addPOIItem(marker);
+
     }
-    */
+
 
 }
