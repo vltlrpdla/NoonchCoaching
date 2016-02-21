@@ -192,8 +192,6 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         Log.i(LOG_TAG, "MapView had loaded. Now, MapView APIs could be called safely");
         //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving);
 
-
-
         mMapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(latitude, longitude), 2, true);
 
         //initial query
@@ -230,14 +228,17 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
         for (int i = 0; i < itemList.size(); i++) {
             Item item = itemList.get(i);
 
+            //url 이미지가 없으면 그냥 default 이미지 넣어줌
+            if(item.getImageUrl().equals("")){
+                item.setImageUrl(defaultImageUrl);
+            }
 
+            //첫번째 아이템이 셀렉 되기 때문에
             if ( i == 0 ){
                 currentItem = item;
                 setDetailView();
             }
-            if(item.getImageUrl().equals("")){
-                item.setImageUrl(defaultImageUrl);
-            }
+
             MapPOIItem poiItem = new MapPOIItem();
             poiItem.setItemName(item.title);
             poiItem.setTag(i);
@@ -343,7 +344,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                 addrView.setText(currentItem.address);
                 telView.setText(currentItem.phone);
 
-                currentItem.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                new DownloadImageTask(cookImage).execute(currentItem.getImageUrl());
 
             }
         });
