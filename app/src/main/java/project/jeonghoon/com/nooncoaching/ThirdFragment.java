@@ -1,73 +1,113 @@
 package project.jeonghoon.com.nooncoaching;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class ThirdFragment extends Fragment {
 
+    RecyclerView recyclerView;
+    FavorItemAdapter adapter;
+    DBHandler dbHandler;
+    ArrayList<FavorItem> FavorItems;
 
-    SelectResFragment selectResFragment;
-    MySearchResFragment mySearchResFragment;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_third, container, false);
 
-        selectResFragment = new SelectResFragment();
-        mySearchResFragment = new MySearchResFragment();
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+
+        // set orientation to vertical
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // set adapter
+        adapter = new FavorItemAdapter(getActivity().getApplicationContext());
+
+        // add sample data
+        dbHandler = DBHandler.open(MainActivity.mContext);
+        FavorItems = dbHandler.selectFavorItem();
 
 
-        getChildFragmentManager().beginTransaction().replace(R.id.container, selectResFragment).commit();
+        //if(FavorItems == null) {
+          //  adapter.addItem("기념일을 입력해주세요.");
+      //  }else{
+
+            for (int i=0; i<FavorItems.size(); i++){
+
+                Log.d("wert3738", i + "번쨰" + 1 + " 아이템" + FavorItems.get(i).getAddress());
+                Log.d("wert3738", i + "번쨰" + 2 + " 아이템" + FavorItems.get(i).getTitle());
 
 
-        TabLayout tabs = (TabLayout) rootView.findViewById(R.id.tabs);
-        tabs.addTab(tabs.newTab().setText("나의 음식"));
-        tabs.addTab(tabs.newTab().setText("선호 음식"));
+                String beforeSplitAddress = FavorItems.get(i).getAddress();
+                String lc[] = beforeSplitAddress.split(" ");
 
-        tabs.setOnTabSelectedListener(new TabListen());
+                staticMerge.loadAddr(MainActivity.mContext);
 
+
+                if ( lc[2].equals(staticMerge.dong))
+                    adapter.addItem(FavorItems.get(i));
+
+            }
+     //   }
+
+
+        recyclerView.setAdapter(adapter);
+
+        // set OnItemClickListener
+        adapter.setOnItemClickListener(new FavorItemAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(FavorItemAdapter.ViewHolder holder, View view, int position) {
+                FavorItem item = adapter.getItem(position);
+                String title = item.getTitle();
+                //String imageUrl = item.getImageUrl();
+                String phone = item.getPhone();
+                //String fDate = item.getfDate();
+                String Cate = item.getCategory();
+
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.getPhone()));
+                startActivity(intent);
+
+
+                Toast.makeText(getActivity().getApplicationContext(), "아이템 클릭됨 : " + position + ", " + title + ", " + phone + ", "+Cate , Toast.LENGTH_LONG).show();
+            }
+        });
 
         return rootView;
     }
 
-    public class TabListen implements TabLayout.OnTabSelectedListener{
-        @Override
-        public void onTabSelected(TabLayout.Tab tab) {
-            int position = tab.getPosition();
+    @Override
+    public void onStart() {
 
-            Log.d("MainActivity", "선택된 탭 : " + position);
-
-            Fragment selected = null;
-            if (position == 0) {
-                selected = selectResFragment;
-            } else if (position == 1) {
-                selected = mySearchResFragment;
-            }
-
-            getChildFragmentManager().beginTransaction().replace(R.id.container, selected).commit();
-
-        }
-
-        @Override
-        public void onTabUnselected(TabLayout.Tab tab) {
-
-        }
-
-        @Override
-        public void onTabReselected(TabLayout.Tab tab) {
-
-        }
-
-
+        super.onStart();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
+    @Override
+    public void onStop() {
+        dbHandler.close();
+        super.onStop();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 }

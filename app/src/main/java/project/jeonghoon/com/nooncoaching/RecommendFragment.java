@@ -301,8 +301,16 @@ public class RecommendFragment extends Fragment {
                 Item in1 = MainActivity.ThemaItem.get(index);
                 DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
                 dbHandler.click_time();
-                dbHandler.food_favorite_insert();
+                boolean flag = dbHandler.insertFavorItem();
+                if ( flag ){
+                    Log.d("wert3738","입력 완료");
+                }else{
+                    Log.d("wert3738","입력 실패");
+                }
+                dbHandler.stored_data_insert();
+                dbHandler.selectFood();
                 dbHandler.close();
+
             }
         });
         marker.setItemName("Default Marker");

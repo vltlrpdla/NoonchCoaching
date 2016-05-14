@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="120dp"
-    android:background="@drawable/card_background"
+    android:background="@color/colorAccent"
     android:layout_marginLeft="4dp"
     android:layout_marginRight="2dp"
     android:layout_marginTop="4dp"
@@ -28,23 +28,35 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="기록 날짜"
-            android:id="@+id/textDate"
-            android:layout_weight="1" />
+            android:text="카테 고리"
+            android:id="@+id/textCate"
+            android:layout_weight="1"
+            android:textColor="#2b2323"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="식당 이름"
             android:id="@+id/textTitle"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textColor="#2b2323"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="전화 번호"
             android:id="@+id/textPhone"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textColor="#2b2323"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="주소"
+            android:id="@+id/textAddress"
+            android:layout_weight="1"
+            android:textColor="#2b2323"/>
+
     </LinearLayout>
 
 </LinearLayout>

@@ -63,6 +63,9 @@ public class registerAlarm {
     }
     public void registerAM(String idIndex,String index,int ind) {
         SharedInit SI = new SharedInit(context);
+
+        long oneDay = 60 * 60 * 1000 * 24;
+
         try {
             SI.setSharedTimeLong(index, SI.getSharedTime(index));
 
@@ -73,7 +76,8 @@ public class registerAlarm {
             PendingIntent sender = PendingIntent.getBroadcast(context, ind, intentMyService, 0);
 
             // 서비스 시작
-            am.set(AlarmManager.RTC_WAKEUP, SI.getSharedTime(index), sender);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, SI.getSharedTime(index), oneDay, sender);
+
         } catch (Exception e) {
             Log.d("MpMainActivity", e.getMessage() + "");
 

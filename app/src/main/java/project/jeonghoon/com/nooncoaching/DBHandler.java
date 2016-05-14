@@ -42,30 +42,27 @@ public class DBHandler {
     }
 
     public boolean insertAnni(Anni ani){
-        ArrayList<Anni> Annis = new ArrayList<>();
-        Cursor cursor = null;
+
         try{
             db.execSQL("INSERT INTO anni_profile (subject, year, month, day, cate) " +
                     "VALUES ('" + ani.getSubject() + "', " + ani.getYear() + ", " + ani.getMonth() + ", " + ani.getDay() + ",'"+ ani.getCate() +"');");
-
         }catch (Exception e){
             return false;
         }
 
         return true;
     }
+
     public boolean deleteAnni(Anni ani){
-        ArrayList<Anni> Annis = new ArrayList<>();
-        Cursor cursor= null;
         try{
             db.execSQL("DELETE FROM anni_profile WHERE _id="+ani.getSeq());
 
         }catch (Exception e){
             return false;
         }
-
         return true;
     }
+
     public ArrayList<Anni> selectAnniWithWhere(int month,int day){
         ArrayList<Anni> Annis = new ArrayList<>();
         Cursor cursor= null;
@@ -93,11 +90,7 @@ public class DBHandler {
 
     }
 
-
-
-
     public boolean updateAnni(Anni ani){
-        ArrayList<Anni> Annis = new ArrayList<>();
         try{
             db.execSQL("UPDATE anni_profile SET " +
                     "subject='"+ani.getSubject()+"', cate='"+ani.getCate()+"', year="+ani.getYear()+", month="+ani.getMonth()+", day="+ani.getDay()+" WHERE _id="+ani.getSeq()+";");
@@ -136,6 +129,65 @@ public class DBHandler {
         return Annis;
 
     }
+////"title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT
+    public boolean insertFavorItem(FavorItem item){
+
+        try{
+            db.execSQL("INSERT INTO food_favor (title, category, imageUrl, phone, address) " +
+                    "VALUES ('" + item.getTitle() + "', " + item.getCategory() + ", " + item.getImageUrl() + ", " + item.getPhone() + ",'"+ item.getAddress() +"');");
+        }catch (Exception e){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean insertFavorItem(){
+        try{
+            if(selectDataWithWhere(item.getTitle())) {
+                db.execSQL("INSERT INTO food_favor (title, category, imageUrl, phone, address) " +
+                        "VALUES ('" + item.getTitle() + "', '" + item.getCategory() + "', '" + item.getImageUrl() + "', '" + item.getPhone() + "','" + item.getAddress() + "');");
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+
+        return true;
+    }
+
+    public ArrayList<FavorItem> selectFavorItem(){
+        ArrayList<FavorItem> FavorItems = new ArrayList<>();
+        Cursor cursor= null;
+        cursor = db.rawQuery("select * from food_favor;", null);
+        Log.i("aaaa",""+cursor.getCount());
+
+        if(cursor.getCount() <= 0)
+            return null;
+
+        int _id = cursor.getColumnIndex("_id");
+        int title = cursor.getColumnIndex("title");
+        int category = cursor.getColumnIndex("category");
+        int imageUrl = cursor.getColumnIndex("imageUrl");
+        int phone = cursor.getColumnIndex("phone");
+        int address = cursor.getColumnIndex("address");
+
+        while(cursor.moveToNext()){
+            FavorItem item = new FavorItem();
+            item.setSeq(cursor.getInt(_id));
+            item.setTitle(cursor.getString(title));
+            item.setCategory(cursor.getString(category));
+            item.setImageUrl(cursor.getString(imageUrl));
+            item.setPhone(cursor.getString(phone));
+            item.setAddress(cursor.getString(address));
+            FavorItems.add(item);
+        }
+        return FavorItems;
+
+    }
+
+
     public String selectfood(String local) throws SQLException {
         Cursor cursor= null;
         boolean flag = true;
@@ -180,7 +232,7 @@ public class DBHandler {
         Collections.sort(foodname, new Comparator<weigt_foodname>() {
             @Override
             public int compare(weigt_foodname lhs, weigt_foodname rhs) {
-                return (lhs.weight > rhs.weight)?-1:(lhs.weight < rhs.weight)?1:0;
+                return (lhs.weight > rhs.weight) ? -1 : (lhs.weight < rhs.weight) ? 1 : 0;
             }
         });
         switch (staticMerge.food.size()){
@@ -207,6 +259,137 @@ public class DBHandler {
         }
 
         return null;
+    }
+
+    public String selectFood(){
+        String sql = "select * from stored_data order by weight desc;";
+        Cursor cursor = null;
+        cursor = db.rawQuery(sql, null);
+        cursor.moveToFirst();
+
+        int category = cursor.getColumnIndex("category");
+        int weight = cursor.getColumnIndex("weight");
+        int weather = cursor.getColumnIndex("weather");
+
+
+        if(cursor.getCount() <=0){
+            staticMerge.finish_food[0] = "empty";
+            staticMerge.finish_food[1] = "empty";
+            staticMerge.finish_food[2] = "empty";
+        }
+
+
+        int i  = 0 ;
+        while(cursor.moveToNext()){
+
+            staticMerge.finish_food[i] = cursor.getString(category);
+            i++;
+
+            Log.d("Dbhandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
+
+            if ( i == 3 ){
+                break;
+            }
+
+
+
+        }
+
+        return null;
+
+
+    }
+    //category TEXT, weather TEXT, weight INTEGER
+    public void stored_data_insert(){
+        String weather = "맑음";
+        String endOfCategory = endCategory(item.category);
+
+        int weight = 1;
+
+        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
+
+        Log.d("DBhandler", "beforeWeight : " + beforeWeight);
+        if ( beforeWeight != 0 ){
+
+            updateStoredData(endOfCategory, beforeWeight + 1 );
+
+        }else{
+
+            try{
+                db.execSQL("INSERT INTO stored_data VALUES(null, '" + endOfCategory + "','" + weather + "'," + weight + ");");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+
+    }
+
+    public boolean updateStoredData(String category, int afterweight){
+
+        try{
+            db.execSQL("UPDATE stored_data SET " +
+                    "weight="+afterweight+" WHERE category='"+category+"';");
+
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+
+    }
+
+    public int selectFavorDataWithWhere(String category){
+
+
+        Cursor cursor= null;
+        cursor = db.rawQuery("select * from stored_data where category ='"+ category+ "';", null);
+        cursor.moveToFirst();
+
+        if ( cursor.getCount() <= 0 ){
+            return 0;
+        }
+
+        //category TEXT, weather TEXT, weight INTEGER
+        int category1 = cursor.getColumnIndex("category");
+        int weather = cursor.getColumnIndex("weather");
+        int weight = cursor.getColumnIndex("weight");
+
+        int beforeweight = cursor.getInt(weight);
+
+
+
+
+        return beforeweight;
+
+    }
+
+    public boolean selectDataWithWhere(String title){
+
+        Cursor cursor= null;
+        cursor = db.rawQuery("select * from food_favor where title ='"+ title + "';", null);
+
+
+        if ( cursor.getCount() <= 0 ){
+            return true;
+        }
+
+        return false;
+    }
+
+    public String endCategory(String inputString){
+
+
+        String afterSplit[] = inputString.split(">");
+
+        String endOfCategory = afterSplit[afterSplit.length - 1];
+
+        String lastSplit[] = endOfCategory.split(",");
+
+        Log.d("DBhandler","lastSplit"  + lastSplit[0]);
+
+        return lastSplit[0];
+
     }
 
 

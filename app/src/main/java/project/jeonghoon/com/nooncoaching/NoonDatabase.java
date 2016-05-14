@@ -28,9 +28,12 @@ public class NoonDatabase extends SQLiteOpenHelper {
         String CREATE_SQL4 = "CREATE TABLE IF NOT EXISTS anni_profile" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "subject TEXT, year INTEGER, month INTEGER,day INTEGER, cate TEXT);";
-        String CREATE_SQL5 = "CREATE TABLE IF NOT EXISTS food_search" +
+        String CREATE_SQL5 = "CREATE TABLE IF NOT EXISTS food_favor" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "title TEXT, imageUrl TEXT, phone TEXT, f_date TEXT);";
+                "title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT);";
+        String CREATE_SQL6 = "CREATE TABLE IF NOT EXISTS stored_data" +
+                "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "category TEXT, weather TEXT, weight INTEGER);";
 
         try {
             db.execSQL(CREATE_SQL1);
@@ -38,6 +41,7 @@ public class NoonDatabase extends SQLiteOpenHelper {
             db.execSQL(CREATE_SQL3);
             db.execSQL(CREATE_SQL4);
             db.execSQL(CREATE_SQL5);
+            db.execSQL(CREATE_SQL6);
             Log.i("widgeta", "create sql");
         } catch(Exception ex) {
             Log.i("widgeta", "Exception in CREATE_SQL");
@@ -47,7 +51,7 @@ public class NoonDatabase extends SQLiteOpenHelper {
             db.execSQL("INSERT INTO food_pattern VALUES (null, 1,1,1,1,1,1,1);");
             db.execSQL("INSERT INTO abode VALUES (null, '단월동','458-101', 1, 0);");
             db.execSQL("INSERT INTO food_favorite (local_name, food, wea, time, weight) VALUES ('단월동','파전','rain','점저',1);");
-            db.execSQL("INSERT INTO food_search (local_name, food, wea, time, weight) VALUES ('짬뽕','http://222.116.135.76:8080/Noon/images/noon.png','01049363265','2016-02-13');");
+            db.execSQL("INSERT INTO food_search (title, imageUrl, phone, f_date) VALUES ('짬뽕','http://222.116.135.76:8080/Noon/images/noon.png','01049363265','2016-02-13');");
             Log.i("widgeta","insert sql");
         } catch(Exception ex) {
             Log.i("widgeta", "Exception in INSERT_SQL");
@@ -68,6 +72,7 @@ public class NoonDatabase extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS food_favorite;");
             db.execSQL("DROP TABLE IF EXISTS anni_profile;");
             db.execSQL("DROP TABLE IF EXISTS food_search;");
+            db.execSQL("DROP TABLE IF EXISTS stored_data");
             onCreate(db);
         }
     }//onUpgrade 끝끝

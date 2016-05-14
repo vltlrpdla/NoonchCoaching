@@ -2,10 +2,7 @@ package project.jeonghoon.com.nooncoaching;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,7 +21,6 @@ import net.daum.mf.map.api.CalloutBalloonAdapter;
 import net.daum.mf.map.api.CameraUpdateFactory;
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
-import net.daum.mf.map.api.MapPoint.GeoCoordinate;
 import net.daum.mf.map.api.MapPointBounds;
 import net.daum.mf.map.api.MapView;
 
@@ -37,7 +33,7 @@ import java.util.List;
 // search Location problem,
 public class SearchFragment extends Fragment implements MapView.MapViewEventListener, MapView.POIItemEventListener {
 
-    private static final String LOG_TAG = "SearchDemoActivity";
+    private static final String LOG_TAG = "SearchFragment";
 
     private MapView mMapView;
     private EditText mEditTextQuery;
@@ -52,12 +48,11 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     Item currentItem;
     double latitude;
     double longitude;
-    int radius = 1000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
+    int radius = 10000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
     int page = 1;
     String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
     String defaultImageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
-
-
+    private GpsInfo gps;
 
 
     @Nullable
@@ -84,11 +79,14 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
         mButtonSearch = (Button) rootView.findViewById(R.id.buttonSearch); // 검색버튼
 
-        //MapView Initial by User location
-        LocationManager locationManager = (LocationManager) MainActivity.mContext.getSystemService(Context.LOCATION_SERVICE);
-        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
+        Log.d(LOG_TAG, "검색 프래그먼트 진입");
+        //gps 사용
+        gps = new GpsInfo(getActivity());
+
+
+        latitude = gps.getLatitude();
+        longitude = gps.getLongitude();
+
 
         //검색 버튼 리스너
         mButtonSearch.setOnClickListener(new OnClickListener() { // 검색버튼 클릭 이벤트 리스너
@@ -103,8 +101,8 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
                 showToast("" + latitude);
 
-                Searcher searcher = new Searcher(); // net.daum.android.map.openapi.search.Searcher
-                searcher.searchKeyword(getActivity().getApplicationContext(), query, latitude, longitude, radius, page, apikey, new OnFinishSearchListener() {
+                OldSearcher searcher = new OldSearcher(); // net.daum.android.map.openapi.search.Searcher
+                searcher.searchKeyword(getActivity().getApplicationContext(), query, latitude, longitude, radius, page, 2, apikey, new OnFinishSearchListener() {
                     @Override
                     public void onSuccess(List<Item> itemList) {
                         mMapView.removeAllPOIItems(); // 기존 검색 결과 삭제
@@ -143,7 +141,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                     sb.append("distance=").append(currentItem.distance).append("\n");
                     sb.append("direction=").append(currentItem.direction).append("\n");
                     dbHandler.click_time();
-                    dbHandler.food_search_insert();
+                    dbHandler.insertFavorItem();
                     dbHandler.close();
                     Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
                 }

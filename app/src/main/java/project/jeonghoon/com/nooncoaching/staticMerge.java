@@ -14,6 +14,8 @@ public class staticMerge {
     static String what="nothing";
     static String dong;
     static String bunji;
+    static double latitude;
+    static double longitude;
     static String[] finish_food = new String[5];
     static ArrayList<String> food = new ArrayList<>();
     static ArrayList<String> foodAnni = new ArrayList<>();

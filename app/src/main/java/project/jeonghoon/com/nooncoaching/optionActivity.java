@@ -175,13 +175,7 @@ public class optionActivity extends FragmentActivity {
                 }
             }
         });
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent Service = new Intent(optionActivity.this, GpsService.class);
-                stopService(Service);
-            }
-        });
+
 
         btn2.setOnClickListener(new View.OnClickListener() {
             @Override

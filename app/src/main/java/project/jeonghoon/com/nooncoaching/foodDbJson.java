@@ -1,8 +1,5 @@
 package project.jeonghoon.com.nooncoaching;
 
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -26,19 +23,27 @@ import java.util.List;
  * Created by han on 2015-11-24.
  */
 public class foodDbJson extends AsyncTask<String,Void,Void> {
+
+
+    private GpsInfo gps;
+    double latitude;
+    double longitude;
+
     @Override
     protected void onPostExecute(Void aVoid) {
 
         DBHandler dh = DBHandler.open(MainActivity.mContext);
-        dh.selectfood(staticMerge.dong);
+        dh.selectFood();
+
+        gps = new GpsInfo(MainActivity.mContext);
+        latitude = gps.getLatitude();
+        longitude = gps.getLongitude();
+
 
         try{
-            LocationManager locationManager = (LocationManager) MainActivity.mContext.getSystemService(Context.LOCATION_SERVICE);
-            int radius = 1000;
+
+            int radius = 3000;
             int page = 1;
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
 
             if(!(staticMerge.foodAnni.get(0).equals("empty"))) {
                 Searcher searcher1_1,searcher1_2,searcher1_3;
@@ -340,8 +345,8 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                 });
             }
 
-            Searcher searcher3 = new Searcher();
-            searcher3.searchCategory(MainActivity.mContext, "FD6", latitude, longitude, radius, page,  MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
+            OldSearcher searcher3 = new OldSearcher();
+            searcher3.searchCategory(MainActivity.mContext, "FD6", latitude, longitude, radius, page,2,  MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
                 @Override
                 public void onSuccess(List<Item> itemList) {
                     Item item = new Item();

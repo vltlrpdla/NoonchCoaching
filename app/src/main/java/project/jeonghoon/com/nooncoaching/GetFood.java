@@ -145,7 +145,12 @@ public class GetFood extends BroadcastReceiver {
             getItem(staticMerge.what);
         }
 
-        Notification(staticMerge.what);
+        if(!staticMerge.what.equals("수동")) {
+            Notification(staticMerge.what);
+        }
+
+        registerAlarm rA = new registerAlarm(MainActivity.mContext);
+        rA.registerDong("Detailaddr");
 
     }
 
