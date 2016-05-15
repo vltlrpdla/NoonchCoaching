@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
             staticMerge.latitude = gps.getLatitude();
             staticMerge.longitude = gps.getLongitude();
 
+            registerAlarm rA = new registerAlarm(getApplicationContext());
+            rA.testAM2("ACTION.GET.NORMAL", 1);
+            Toast.makeText(this, "새 추천이 도착했습니다.", Toast.LENGTH_SHORT).show();
+
             Toast.makeText(
                     getApplicationContext(),
                     "당신의 위치 - \n위도: " + staticMerge.latitude + "\n경도: " + staticMerge.longitude,
@@ -219,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             item.title = "(X)title"+i;
             item.category = "(X)category"+i;
             item.address = "(X) add ress"+i;
-            item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+            item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
             item.phone = "010-2043-5392";
             ThemaItem.add(i-1,item);
         }

@@ -51,7 +51,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
     int radius = 10000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
     int page = 1;
     String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
-    String defaultImageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+    String defaultImageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
     private GpsInfo gps;
 
 

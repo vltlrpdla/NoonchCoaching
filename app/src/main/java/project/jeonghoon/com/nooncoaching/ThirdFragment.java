@@ -52,13 +52,13 @@ public class ThirdFragment extends Fragment {
                 Log.d("wert3738", i + "번쨰" + 2 + " 아이템" + FavorItems.get(i).getTitle());
 
 
-                String beforeSplitAddress = FavorItems.get(i).getAddress();
-                String lc[] = beforeSplitAddress.split(" ");
+                //String beforeSplitAddress = FavorItems.get(i).getAddress();
+               // String lc[] = beforeSplitAddress.split(" ");
 
-                staticMerge.loadAddr(MainActivity.mContext);
+                //staticMerge.loadAddr(MainActivity.mContext);
 
 
-                if ( lc[2].equals(staticMerge.dong))
+               // if ( lc[2].equals(staticMerge.dong))
                     adapter.addItem(FavorItems.get(i));
 
             }

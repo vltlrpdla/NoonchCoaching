@@ -56,13 +56,13 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(0)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
                                 Item item2 = new Item();
                                 item2.title = "오늘은";
                                 item2.category = "";
-                                item2.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item2.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item2.address = "추천 주소가 없습니다.";
                                 item2.phone = "기념일이 없습니다.";
                                 if (itemList.size() == 0) {
@@ -89,13 +89,13 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(0)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
                                 Item item2 = new Item();
                                 item2.title = "오늘은";
                                 item2.category = "";
-                                item2.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item2.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item2.address = "추천 주소가 없습니다.";
                                 item2.phone = "기념일이 없습니다.";
                                 if (itemList.size() == 0) {
@@ -120,13 +120,13 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(1)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
                                 Item item2 = new Item();
                                 item2.title = "오늘에 맞는 ";
                                 item2.category = "";
-                                item2.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item2.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item2.address = "추천 주소가 없습니다.";
                                 item2.phone = "기념일이 없습니다.";
                                 if (itemList.size() == 0) {
@@ -151,13 +151,13 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(0)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
                                 Item item2 = new Item();
                                 item2.title = "오늘은";
                                 item2.category = "";
-                                item2.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item2.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item2.address = "추천 주소가 없습니다.";
                                 item2.phone = "기념일이 없습니다.";
                                 if (itemList.size() == 0) {
@@ -182,13 +182,13 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(1)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
                                 Item item2 = new Item();
                                 item2.title = "오늘에 맞는 ";
                                 item2.category = "";
-                                item2.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item2.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item2.address = "추천 주소가 없습니다.";
                                 item2.phone = "기념일이 없습니다.";
                                 if (itemList.size() == 0) {
@@ -211,7 +211,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                                 Item item = new Item();
                                 item.title = "오늘은 "+staticMerge.foodAnni.get(2)+"을 먹는 날입니다만";
                                 item.category = "";
-                                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                                 item.address = "추천 주소가 없습니다.";
                                 item.phone = "주변에 맞는 음식점이 없습니다.";
 
@@ -232,7 +232,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                 Item item = new Item();
                 item.title = "오늘에 해당하는 ";
                 item.category = " ";
-                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                 item.address = "추천 주소가 없습니다.";
                 item.phone = "기념일이 없습니다.";
                 MainActivity.ThemaItem.set(0, item);
@@ -244,7 +244,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             if(staticMerge.finish_food[0].equals("empty")){
                 Item item = new Item();
                 item.title = "맞춤";
-                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                 item.category = "음식점이 없습니다.";
                 item.address = "추천 주소가 없습니다.";
                 item.phone = "추천할만한";
@@ -258,7 +258,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                         if(itemList.size() == 0){
                             Item item = new Item();
                             item.title = "맞춤";
-                            item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                            item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                             item.category = "음식점이 없습니다.";
                             item.address = "추천 주소가 없습니다.";
                             item.phone = "추천할만한";
@@ -279,7 +279,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             if(staticMerge.finish_food[1].equals("empty")){
                 Item item = new Item();
                 item.title = "맞춤";
-                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                 item.category = "음식점이 없습니다.";
                 item.address = "추천 주소가 없습니다.";
                 item.phone = "추천할만한";
@@ -293,7 +293,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                         if(itemList.size() == 0){
                             Item item = new Item();
                             item.title = "맞춤";
-                            item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                            item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                             item.category = "음식점이 없습니다.";
                             item.address = "추천 주소가 없습니다.";
                             item.phone = "추천할만한";
@@ -313,7 +313,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             if(staticMerge.finish_food[2].equals("empty")){
                 Item item = new Item();
                 item.title = "맞춤";
-                item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                 item.category = "음식점이 없습니다.";
                 item.address = "추천 주소가 없습니다.";
                 item.phone = "추천할만한";
@@ -327,7 +327,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                         if(itemList.size() == 0){
                             Item item = new Item();
                             item.title = "맞춤";
-                            item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                            item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                             item.category = "음식점이 없습니다.";
                             item.address = "추천 주소가 없습니다.";
                             item.phone = "추천할만한";
@@ -352,7 +352,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                     Item item = new Item();
                     item.title = "가까운 거리에";
                     item.category = "음식점이 없습니다.";
-                    item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                    item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                     item.address = "추천 주소가 없습니다.";
                     item.phone = "추천할만한";
                     if(itemList.size() == 0){
@@ -393,7 +393,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
                     item.title = "무작위로";
                     item.category = "음식점이 없습니다.";
                     item.address = "추천 주소가 없습니다.";
-                    item.imageUrl = "http://222.116.135.76:8080/Noon/images/noon.png";
+                    item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
                     item.phone = "추천할만한";
                     if (itemList.size() == 0) {
 
@@ -454,7 +454,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
         ArrayList<String> foodDB = new ArrayList<String>();
 
         try {
-            URL url = new URL("http://222.116.135.76:8080/Noon/createJson.jsp?" + params[0]);
+            URL url = new URL("http://222.116.135.79:8080/Noon/createJson.jsp?" + params[0]);
             Log.i("param0", "" + params[0]);
             URLConnection conn = (HttpURLConnection) url.openConnection();
             HttpURLConnection http = (HttpURLConnection) conn;
@@ -518,7 +518,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
 
         if(Annis == null){
             try {
-                URL url = new URL("http://222.116.135.76:8080/Noon/createJson.jsp?" + params[1]);
+                URL url = new URL("http://222.116.135.79:8080/Noon/createJson.jsp?" + params[1]);
                 Log.i("param1", "" + params[1]);
                 URLConnection conn = (HttpURLConnection) url.openConnection();
                 HttpURLConnection http = (HttpURLConnection) conn;
@@ -568,7 +568,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
 
             if(food_nameAnniv.equals("empty")){
                 try {
-                    URL url = new URL("http://222.116.135.76:8080/Noon/createJson.jsp?" + params[2]);
+                    URL url = new URL("http://222.116.135.79:8080/Noon/createJson.jsp?" + params[2]);
                     Log.i("param2", "" + params[2]);
                     URLConnection conn = (HttpURLConnection) url.openConnection();
                     HttpURLConnection http = (HttpURLConnection) conn;
@@ -638,8 +638,8 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             try {
 
                 String query = URLEncoder.encode(staticMerge.finish_food[4], "utf-8");
-                URL url2 = new URL("http://222.116.135.76:8080/Noon/createJson.jsp?" + "tbName=noon_food&col=food_name&food_wea="+staticMerge.temp+"&food_ann="+query);
-                Log.i("param3","http://222.116.135.76:8080/Noon/createJson.jsp?" + "tbName=noon_food&col=food_name&food_wea="+staticMerge.temp+"&food_ann="+query);
+                URL url2 = new URL("http://222.116.135.79:8080/Noon/createJson.jsp?" + "tbName=noon_food&col=food_name&food_wea="+staticMerge.temp+"&food_ann="+query);
+                Log.i("param3","http://222.116.135.79:8080/Noon/createJson.jsp?" + "tbName=noon_food&col=food_name&food_wea="+staticMerge.temp+"&food_ann="+query);
                 URLConnection conn2 = (HttpURLConnection) url2.openConnection();
                 HttpURLConnection http2 = (HttpURLConnection) conn2;
                 ArrayList<String> foodAnni = new ArrayList<>();

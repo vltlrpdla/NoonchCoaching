@@ -281,7 +281,7 @@ public class RecommendFragment extends Fragment {
         cateTv.setText("" + in1.category);
         addrTv.setText("" + in1.address);
         if(in1.imageUrl.equals("")){
-            in1.imageUrl ="http://222.116.135.76:8080/Noon/images/noon.png";
+            in1.imageUrl ="http://222.116.135.79:8080/Noon/images/noon.png";
             new DownloadImageTask(foodImg).execute(in1.imageUrl);
         }else{
             new DownloadImageTask(foodImg).execute(in1.imageUrl);
