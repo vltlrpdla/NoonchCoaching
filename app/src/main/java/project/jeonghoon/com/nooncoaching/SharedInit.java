@@ -38,7 +38,7 @@ public class SharedInit {
         setSharedTime("1", 9, 30);
         setSharedTime("2", 11, 30);
         setSharedTime("3", 15, 30);
-        setSharedTime("4",18, 30);
+        setSharedTime("4",19, 52);
         setSharedTime("5", 20, 36);
         setSharedTime("6", 12, 30);
     }
@@ -68,6 +68,8 @@ public class SharedInit {
         long triggerTime = timeLong;
         if (atime > timeLong)
             triggerTime += 1000 * 60 * 60 * 24;
+            //triggerTime += 1000 * 60 * 2;
+
 
         SharedPreferences.Editor TimeEditor = SharedTime.edit();
         TimeEditor.putLong(index, triggerTime);

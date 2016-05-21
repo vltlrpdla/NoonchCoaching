@@ -65,8 +65,14 @@ public class GetFood extends BroadcastReceiver {
             String exceptionAsStrting = sw.toString();
             Log.e("aaaa", exceptionAsStrting);
         }
+
+
+
+        Log.d("GetFood", "지나가나 확인해보는 코드1");
         registerAlarm rA = new registerAlarm(context);
         rA.registerAM(intent.getAction(),index,id);
+
+        Log.d("GetFood", "지나가나 확인해보는 코드2");
     }
     public void getItem(String what){
 

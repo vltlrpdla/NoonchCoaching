@@ -62,10 +62,16 @@ public class registerAlarm {
         }
     }
     public void registerAM(String idIndex,String index,int ind) {
+
+
+/*
+        Intent intentMyService;
+        PendingIntent sender;
+        intentMyService = new Intent("ACTION.GET.ONE");
+        sender = PendingIntent.getBroadcast(context, 1, intentMyService, 0);
+        am.set(AlarmManager.RTC_WAKEUP, SI.getSharedTime("0"), sender);
+*/
         SharedInit SI = new SharedInit(context);
-
-        long oneDay = 60 * 60 * 1000 * 24;
-
         try {
             SI.setSharedTimeLong(index, SI.getSharedTime(index));
 
@@ -76,14 +82,43 @@ public class registerAlarm {
             PendingIntent sender = PendingIntent.getBroadcast(context, ind, intentMyService, 0);
 
             // 서비스 시작
-            am.setRepeating(AlarmManager.RTC_WAKEUP, SI.getSharedTime(index), oneDay, sender);
-
+            am.set(AlarmManager.RTC_WAKEUP, SI.getSharedTime(index), sender);
         } catch (Exception e) {
             Log.d("MpMainActivity", e.getMessage() + "");
 
             e.printStackTrace();
         }
     }
+
+    public void registerAM2(String idIndex,String index,int ind) {
+
+
+/*
+        Intent intentMyService;
+        PendingIntent sender;
+        intentMyService = new Intent("ACTION.GET.ONE");
+        sender = PendingIntent.getBroadcast(context, 1, intentMyService, 0);
+        am.set(AlarmManager.RTC_WAKEUP, SI.getSharedTime("0"), sender);
+*/
+        SharedInit SI = new SharedInit(context);
+        try {
+            SI.setSharedTimeLong(index, SI.getSharedTime(index));
+
+            Intent intentMyService;
+            intentMyService = new Intent(idIndex);
+
+            AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+            PendingIntent sender = PendingIntent.getBroadcast(context, ind, intentMyService, 0);
+
+            // 서비스 시작
+            am.set(AlarmManager.RTC_WAKEUP, SI.getSharedTime(index), sender);
+        } catch (Exception e) {
+            Log.d("MpMainActivity", e.getMessage() + "");
+
+            e.printStackTrace();
+        }
+    }
+
     public void registerWT(String idIndex){
         try {
 
