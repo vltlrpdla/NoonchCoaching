@@ -53,14 +53,12 @@ public class RecommendFragment extends Fragment {
 
         SharedInit SI = new SharedInit(MainActivity.mContext);
         registerAlarm rA = new registerAlarm(MainActivity.mContext);
+
+        rA.registerWT("Weather.a");
+        rA.registerDong("Detailaddr");
+
         if(!SI.getSharedTrue("isCreate")){
             SI.Init();
-            rA.registerInit();
-            rA.registerWT("Weather.a");
-            rA.registerDong("Detailaddr");
-            rA.registerNews(10);
-            rA.registerOneWeek();
-            rA.registerpattern();
             rA.registerplace();
         }
 
@@ -77,6 +75,8 @@ public class RecommendFragment extends Fragment {
         arraylist2.add("추천1");
         arraylist2.add("추천2");
         arraylist2.add("추천3");
+        arraylist2.add("추천4");
+        arraylist2.add("추천5");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.mContext,
                 android.R.layout.simple_spinner_dropdown_item, arraylist2);
         SP2.setAdapter(adapter);
@@ -101,11 +101,10 @@ public class RecommendFragment extends Fragment {
         return rootView;
     }
 
-
-
     public class TabListen implements TabLayout.OnTabSelectedListener{
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
+
             int position = tab.getPosition();
             int size = MainActivity.ThemaItem.size();
             Log.d("MainActivity", "선택된 탭 : " + position);
@@ -128,6 +127,12 @@ public class RecommendFragment extends Fragment {
                                         case 2:
                                             SetFoodViewItem(2);
                                             break;
+                                        case 3:
+                                            SetFoodViewItem(3);
+                                            break;
+                                        case 4:
+                                            SetFoodViewItem(4);
+                                            break;
                                     }
                                 }
 
@@ -141,29 +146,34 @@ public class RecommendFragment extends Fragment {
                     SP2.setSelection(0, true);
                     break;
                 case 1:
-                    if(size>=3) {
-                        SetFoodViewItem(3);
+                    if(size>=5) {
+                        SetFoodViewItem(5);
                         if(MainActivity.ThemaItem.size()>0){
                             SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     switch (position){
                                         case 0:
-                                            SetFoodViewItem(3);
-                                            break;
-                                        case 1:
-                                            SetFoodViewItem(4);
-                                            break;
-                                        case 2:
                                             SetFoodViewItem(5);
                                             break;
-
+                                        case 1:
+                                            SetFoodViewItem(6);
+                                            break;
+                                        case 2:
+                                            SetFoodViewItem(7);
+                                            break;
+                                        case 3:
+                                            SetFoodViewItem(8);
+                                            break;
+                                        case 4:
+                                            SetFoodViewItem(9);
+                                            break;
                                     }
                                 }
 
                                 @Override
                                 public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(3);
+                                    SetFoodViewItem(5);
                                 }
                             });
                         }
@@ -171,8 +181,8 @@ public class RecommendFragment extends Fragment {
                     SP2.setSelection(0);
                     break;
                 case 2:
-                    if(size>=6) {
-                        SetFoodViewItem(6);
+                    if(size>=10) {
+                        SetFoodViewItem(10);
                         if(MainActivity.ThemaItem.size()>0){
                             SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
@@ -180,21 +190,26 @@ public class RecommendFragment extends Fragment {
 
                                     switch (position){
                                         case 0:
-                                            SetFoodViewItem(6);
+                                            SetFoodViewItem(10);
                                             break;
                                         case 1:
-                                            SetFoodViewItem(7);
+                                            SetFoodViewItem(11);
                                             break;
                                         case 2:
-                                            SetFoodViewItem(8);
+                                            SetFoodViewItem(12);
                                             break;
-
+                                        case 3:
+                                            SetFoodViewItem(13);
+                                            break;
+                                        case 4:
+                                            SetFoodViewItem(14);
+                                            break;
                                     }
                                 }
 
                                 @Override
                                 public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(6);
+                                    SetFoodViewItem(10);
                                 }
                             });
                         }
@@ -202,8 +217,8 @@ public class RecommendFragment extends Fragment {
                     SP2.setSelection(0);
                     break;
                 case 3:
-                    if(size>=9) {
-                        SetFoodViewItem(9);
+                    if(size>=15) {
+                        SetFoodViewItem(15);
                         if(MainActivity.ThemaItem.size()>0){
                             SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
@@ -211,20 +226,26 @@ public class RecommendFragment extends Fragment {
 
                                     switch (position){
                                         case 0:
-                                            SetFoodViewItem(9);
+                                            SetFoodViewItem(15);
                                             break;
                                         case 1:
-                                            SetFoodViewItem(10);
+                                            SetFoodViewItem(16);
                                             break;
                                         case 2:
-                                            SetFoodViewItem(11);
+                                            SetFoodViewItem(17);
+                                            break;
+                                        case 3:
+                                            SetFoodViewItem(18);
+                                            break;
+                                        case 4:
+                                            SetFoodViewItem(19);
                                             break;
                                     }
                                 }
 
                                 @Override
                                 public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(9);
+                                    SetFoodViewItem(15);
                                 }
                             });
                         }
@@ -297,15 +318,16 @@ public class RecommendFragment extends Fragment {
         SelectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity().getApplicationContext(),"선택 되었습니다.", Toast.LENGTH_SHORT).show();
+
                 Item in1 = MainActivity.ThemaItem.get(index);
                 DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
                 dbHandler.click_time();
                 boolean flag = dbHandler.insertFavorItem();
                 if ( flag ){
-                    Log.d("wert3738","입력 완료");
-                }else{
                     Log.d("wert3738","입력 실패");
+                }else{
+                    Toast.makeText(getActivity(),"입력완료",Toast.LENGTH_LONG).show();
+                    Log.d("wert3738","입력 완료");
                 }
                 dbHandler.stored_data_insert();
                 dbHandler.selectFood();

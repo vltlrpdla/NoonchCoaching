@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import static project.jeonghoon.com.nooncoaching.staticMerge.*;
+
 /**
  * Created by han on 2015-11-24.
  */
@@ -79,14 +81,14 @@ public class Weather extends BroadcastReceiver {
                 JSONObject json = new JSONObject();
                 json = results.getJSONObject(0);
                 int id = json.getInt("id");
-                staticMerge.idTotemp(id);
+                idTotemp(id);
             }catch (Exception e){
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
                 String exceptionAsStrting = sw.toString();
                 Log.e("aaaa", exceptionAsStrting);
             }
-            Log.i("aaaa",staticMerge.temp + "- now weather");
+            Log.i("aaaa", temp + "- now weather");
             super.onPostExecute(s);
         }
     }
@@ -132,6 +134,7 @@ public class Weather extends BroadcastReceiver {
         protected void onPostExecute(String s) {
             String temp[];
             String temp1;
+            String si="";
             String dong="";
             String bunji="";
             try{
@@ -145,6 +148,7 @@ public class Weather extends BroadcastReceiver {
                     bunji += "-"+json.getString("ho");
                 }
                 temp = temp1.split(" ");
+                si = temp[1];
                 dong = temp[2];
 
 
@@ -154,8 +158,8 @@ public class Weather extends BroadcastReceiver {
                 String exceptionAsStrting = sw.toString();
                 Log.e("aaaa", exceptionAsStrting);
             }
-            Log.i("aaaa","dong,bunji:"+dong+","+bunji);
-            staticMerge.saveAddr(MainActivity.mContext, dong, bunji);
+            Log.i("aaaa","si,dong,bunji:"+si+","+dong+","+bunji);
+            saveAddr(MainActivity.mContext, si, dong, bunji);
             //staticMerge.dong = dong;
             //staticMerge.bunji = bunji;
             //동 이름 result

@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
 
         if(ThemaItem.isEmpty()) {
-            make_dummy(); }
+            make_dummy();
+        }
         Log.d(LOG_TAG, "앱 진입");
 
         gps = new GpsInfo(MainActivity.this);
@@ -55,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
             rA.testAM2("ACTION.GET.NORMAL", 1);
             Toast.makeText(this, "새 추천이 도착했습니다.", Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    "당신의 위치 - \n위도: " + staticMerge.latitude + "\n경도: " + staticMerge.longitude,
-                    Toast.LENGTH_LONG).show();
+           // Toast.makeText(
+           //         getApplicationContext(),
+           //         "당신의 위치 - \n위도: " + staticMerge.latitude + "\n경도: " + staticMerge.longitude,
+           //         Toast.LENGTH_LONG).show();
         } else {
             // GPS 를 사용할수 없으므로
             gps.showSettingsAlert();
@@ -188,6 +189,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.action_anniversary){
+            Intent intent = new Intent(MainActivity.this, AnniActivity.class);
+            startActivity(intent);
+
+            return true;
+        }
+
+
+
         return super.onOptionsItemSelected(item);
 
     }
@@ -218,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void make_dummy() {
 
-        for (int i=1; i<13;i++) {
+        for (int i=1; i<21;i++) {
             Item item = new Item();
             item.title = "(X)title"+i;
             item.category = "(X)category"+i;

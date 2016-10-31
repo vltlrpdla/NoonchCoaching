@@ -11,4 +11,9 @@
         android:title="액션버튼"
         app:showAsAction="always"/>
 
+    <item android:id="@+id/action_anniversary"
+        android:icon="@drawable/ic_action_go_to_today"
+        android:title="액션버튼"
+        app:showAsAction="always"/>
+
 </menu>

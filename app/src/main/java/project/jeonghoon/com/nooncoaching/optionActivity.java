@@ -1,7 +1,6 @@
 package project.jeonghoon.com.nooncoaching;
 
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -22,7 +21,6 @@ import java.text.SimpleDateFormat;
  */
 public class optionActivity extends FragmentActivity {
     CheckBox a, b, c, d, e, f, g;
-    Button btn,btn2;
     SharedInit SI;
     registerAlarm RA;
     TextView OE,TE,THE,FE,FIE,SE,SEE;
@@ -41,8 +39,6 @@ public class optionActivity extends FragmentActivity {
         e = (CheckBox) findViewById(R.id.checkBox4);
         f = (CheckBox) findViewById(R.id.checkBox5);
         g = (CheckBox) findViewById(R.id.checkBox6);
-        btn = (Button) findViewById(R.id.stopservice);
-        btn2 = (Button)findViewById(R.id.addAnni);
         OE = (TextView)findViewById(R.id.OE);
         TE = (TextView)findViewById(R.id.TE);
         THE = (TextView)findViewById(R.id.THE);
@@ -177,13 +173,6 @@ public class optionActivity extends FragmentActivity {
         });
 
 
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(optionActivity.this,AnniActivity.class);
-                startActivity(intent);
-            }
-        });
 
         OB.setOnClickListener(new MyOnClick("0"));
         TB.setOnClickListener(new MyOnClick("1"));
@@ -248,10 +237,6 @@ public class optionActivity extends FragmentActivity {
     }
 
 
-    public void onClicked2(View v) {
-        Intent intent = new Intent(this, DBActivity.class);
-        startActivity(intent);
-    }
 
     @Override
     protected void onResume() {

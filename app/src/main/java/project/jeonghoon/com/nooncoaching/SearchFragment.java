@@ -128,7 +128,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                     showToast("아이템을 클릭해주세요");
                 }else {
                     DBHandler dbHandler = DBHandler.open(getActivity(), currentItem);
-                    StringBuilder sb = new StringBuilder();
+                    /*StringBuilder sb = new StringBuilder();
                     sb.append("title=").append(currentItem.title).append("\n");
                     sb.append("imageUrl=").append(currentItem.imageUrl).append("\n");
                     sb.append("address=").append(currentItem.address).append("\n");
@@ -139,11 +139,12 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
                     sb.append("longitude=").append(currentItem.longitude).append("\n");
                     sb.append("latitude=").append(currentItem.latitude).append("\n");
                     sb.append("distance=").append(currentItem.distance).append("\n");
-                    sb.append("direction=").append(currentItem.direction).append("\n");
+                    sb.append("direction=").append(currentItem.direction).append("\n");*/
                     dbHandler.click_time();
                     dbHandler.insertFavorItem();
                     dbHandler.close();
-                    Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "저장 되었습니다.", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -194,7 +195,7 @@ public class SearchFragment extends Fragment implements MapView.MapViewEventList
 
         //initial query
         Searcher searcher = new Searcher();
-        String query = mEditTextQuery.getText().toString();
+        String query = "맛집";
 
         searcher.searchKeyword(getActivity().getApplicationContext(), query, latitude, longitude, radius, page, apikey, new OnFinishSearchListener() {
             @Override

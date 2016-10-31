@@ -12,19 +12,21 @@ import java.util.ArrayList;
 public class staticMerge {
     static String temp="clear";
     static String what="nothing";
+    static String si;
     static String dong;
     static String bunji;
     static double latitude;
     static double longitude;
-    static String[] finish_food = new String[5];
+    static String[] finish_food = new String[10];
+    static String[] recommendation_category = new String[10];
     static ArrayList<String> food = new ArrayList<>();
     static ArrayList<String> foodAnni = new ArrayList<>();
     static boolean timer = false;
 
+
     static {
         loadAddr(MainActivity.mContext);
     }
-
 
 
     public static void idTotemp (int i) {
@@ -53,9 +55,11 @@ public class staticMerge {
         }
     }
 
-    public static void saveAddr(Context context, String Dong, String Bunji) {
+    public static void saveAddr(Context context,String Si, String Dong, String Bunji) {
         SharedPreferences pref = context.getSharedPreferences("staticMerge", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
+        editor.remove("si").commit();
+        editor.putString("si", Si);
         editor.remove("dong").commit();
         editor.putString("dong", Dong);
         editor.remove("bunji").commit();
@@ -66,6 +70,7 @@ public class staticMerge {
 
     public static void loadAddr(Context context) {
         SharedPreferences pref = context.getSharedPreferences("staticMerge", Activity.MODE_PRIVATE);
+        si = pref.getString("si","");
         dong = pref.getString("dong","");
         bunji = pref.getString("bunji","");
     }

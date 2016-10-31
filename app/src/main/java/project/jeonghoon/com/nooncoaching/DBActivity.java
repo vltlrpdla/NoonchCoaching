@@ -54,10 +54,10 @@ public class DBActivity extends Activity {
         //음식패턴 정리
         dbHandler.abode_clean();
     }
-
+/*
     public void abodeAddClicked(View v) {
         dbHandler.abode_insert();
-    }
+    }*/
     public void abodeViewClicked(View v) {
         //거주지 보기
         Cursor cursor = dbHandler.select_abode();

@@ -15,7 +15,7 @@ public class settingBroadcast extends BroadcastReceiver {
             // 30분
             Log.i("ra place","action call.");
             DBHandler dbHandler = DBHandler.open(context);
-            dbHandler.abode_insert();
+            //dbHandler.abode_insert();
             dbHandler.close();
 
         }

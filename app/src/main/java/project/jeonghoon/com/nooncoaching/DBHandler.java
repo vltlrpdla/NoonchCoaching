@@ -157,6 +157,16 @@ public class DBHandler {
         return true;
     }
 
+    public boolean deleteFavorItem(FavorItem far){
+        try{
+            db.execSQL("DELETE FROM food_favor WHERE _id="+far.getSeq());
+
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+
     public ArrayList<FavorItem> selectFavorItem(){
         ArrayList<FavorItem> FavorItems = new ArrayList<>();
         Cursor cursor= null;
@@ -188,8 +198,9 @@ public class DBHandler {
     }
 
 
-    public String selectfood(String local) throws SQLException {
+    public String selectfood() throws SQLException {
         Cursor cursor= null;
+        String local = "무의미한 로컬";
         boolean flag = true;
         ArrayList<weigt_foodname> foodname = new ArrayList<>();
         foodname.clear();
@@ -273,21 +284,21 @@ public class DBHandler {
 
 
         if(cursor.getCount() <=0){
-            staticMerge.finish_food[0] = "empty";
-            staticMerge.finish_food[1] = "empty";
-            staticMerge.finish_food[2] = "empty";
+            for (int i = 0; i < 10; i++){
+                staticMerge.recommendation_category[i] ="empty";
+            }
         }
 
 
         int i  = 0 ;
         while(cursor.moveToNext()){
 
-            staticMerge.finish_food[i] = cursor.getString(category);
+            staticMerge.recommendation_category[i] = cursor.getString(category);
             i++;
 
             Log.d("Dbhandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
 
-            if ( i == 3 ){
+            if ( i == 10 ){
                 break;
             }
 
@@ -500,8 +511,8 @@ public class DBHandler {
             }
         }
     }
-    public void abode_insert() {
-        staticMerge.loadAddr(MainActivity.mContext);
+/*    public void abode_insert() {
+        loadAddr(MainActivity.mContext);
             try {
                 if(!(staticMerge.dong.equals("") || staticMerge.bunji.equals(""))) {
                     db.execSQL("INSERT INTO abode VALUES (null, '" + staticMerge.dong + "', '" + staticMerge.bunji + "', 1, 0);");
@@ -511,6 +522,7 @@ public class DBHandler {
                 Log.i("db","abode_insert Failed");
             }
     }
+    */
     public void abode_clean() {
         //거주지 하루에 한 번 클린해주는 메서드
         Cursor cursor= null;

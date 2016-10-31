@@ -28,6 +28,11 @@ public class FavorItemAdapter extends RecyclerView.Adapter<FavorItemAdapter.View
         mContext = context;
     }
 
+    public void Clear() {
+        items.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return items.size();
@@ -45,6 +50,7 @@ public class FavorItemAdapter extends RecyclerView.Adapter<FavorItemAdapter.View
     public void onBindViewHolder(FavorItemAdapter.ViewHolder holder, int position) {
         holder.setItem(items.get(position));
         holder.setOnItemClickListener(mListener);
+
     }
 
     public void addItem(FavorItem item) {
@@ -58,6 +64,7 @@ public class FavorItemAdapter extends RecyclerView.Adapter<FavorItemAdapter.View
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }
+
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textAddress;
@@ -87,6 +94,8 @@ public class FavorItemAdapter extends RecyclerView.Adapter<FavorItemAdapter.View
                     }
                 }
             });
+
+
         }
 
         public void setItem(FavorItem item) {
@@ -102,6 +111,7 @@ public class FavorItemAdapter extends RecyclerView.Adapter<FavorItemAdapter.View
                 new DownloadImageTask(cookImage).execute(item.getImageUrl());
             }
         }
+
 
         public void setOnItemClickListener(OnItemClickListener inListener) {
             listener = inListener;

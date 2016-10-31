@@ -68,11 +68,7 @@ public class GetFood extends BroadcastReceiver {
 
 
 
-        Log.d("GetFood", "지나가나 확인해보는 코드1");
-        registerAlarm rA = new registerAlarm(context);
-        rA.registerAM(intent.getAction(),index,id);
 
-        Log.d("GetFood", "지나가나 확인해보는 코드2");
     }
     public void getItem(String what){
 
@@ -117,33 +113,54 @@ public class GetFood extends BroadcastReceiver {
         if(intent.getAction().equals("ACTION.GET.ONE")){
             Log.i("aaaa","OOOOOOOOOOOOOOOOOOOOONNNNNNNNNNNNNNNNEEEEEEEE");
             staticMerge.what = "아침";
-            getItem(intent,"0",staticMerge.what,1);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"0",1);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
         }
         if(intent.getAction().equals("ACTION.GET.TWO")){
             staticMerge.what = "아점";
-            getItem(intent,"1",staticMerge.what,2);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"1",2);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
         }
         if(intent.getAction().equals("ACTION.GET.THREE")){
             staticMerge.what = "점심";
-            getItem(intent,"2",staticMerge.what,3);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"2",3);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
 
         }
         if(intent.getAction().equals("ACTION.GET.FOUR")){
             staticMerge.what = "점저";
-            getItem(intent,"3",staticMerge.what,4);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"3",4);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
         }
         if(intent.getAction().equals("ACTION.GET.FIVE")){
             staticMerge.what = "저녁";
-            getItem(intent,"4",staticMerge.what,5);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"4",5);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
 
         }
         if(intent.getAction().equals("ACTION.GET.SIX")){
             staticMerge.what="야식";
-            getItem(intent,"5",staticMerge.what,6);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"5",6);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
         }
         if(intent.getAction().equals("ACTION.GET.SEVEN")){
             staticMerge.what = "후식";
-            getItem(intent,"6",staticMerge.what,7);
+            Log.d("GetFood", "지나가나 확인해보는 코드1");
+            registerAlarm rA = new registerAlarm(context);
+            rA.registerAM(intent.getAction(),"6",7);
+            Log.d("GetFood", "지나가나 확인해보는 코드2");
 
         }
         if(intent.getAction().equals("ACTION.GET.NORMAL")){
@@ -154,6 +171,7 @@ public class GetFood extends BroadcastReceiver {
         if(!staticMerge.what.equals("수동")) {
             Notification(staticMerge.what);
         }
+
 
         registerAlarm rA = new registerAlarm(MainActivity.mContext);
         rA.registerDong("Detailaddr");
@@ -171,13 +189,13 @@ public class GetFood extends BroadcastReceiver {
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setSmallIcon(R.drawable.noon_icon);
         builder.setTicker("맞춤 추천 도착!!");
         builder.setWhen(System.currentTimeMillis());
         builder.setContentTitle( what +"추천 도착!!");
         builder.setContentText("추천 아이템 확인하려면 클릭하세요");
         builder.setDefaults(Notification.DEFAULT_VIBRATE);
-        builder.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.ic_launcher));
+        builder.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.noon_icon));
         builder.setContentIntent(contentIntent);
         builder.setNumber(1);
         builder.setAutoCancel(true);
