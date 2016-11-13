@@ -50,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "새 추천이 도착했습니다.", Toast.LENGTH_SHORT).show();
 
             //여기서 위치와 날씨를 가져왔으면 한다.
+            GetDataTask d = new GetDataTask(this);
+            d.execute(gps.getLatitude(), gps.getLongitude());
 
 
-           // Toast.makeText(
+            // Toast.makeText(
            //         getApplicationContext(),
            //         "당신의 위치 - \n위도: " + staticMerge.latitude + "\n경도: " + staticMerge.longitude,
            //         Toast.LENGTH_LONG).show();
