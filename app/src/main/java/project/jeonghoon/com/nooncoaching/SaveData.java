@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Created by han on 2015-11-25.
  */
+/*
 public class SaveData {
     Context context;
     SharedPreferences SharedData;
@@ -64,3 +65,4 @@ public class SaveData {
     }
 
 }
+*/

@@ -1,28 +1,11 @@
 package project.jeonghoon.com.nooncoaching;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
 /**
  * Created by han on 2015-11-24.
  */
+
+
+/*
 public class foodDbJson extends AsyncTask<String,Void,Void> {
 
 
@@ -36,7 +19,6 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-
 
         Random random = new Random();
 
@@ -1155,4 +1137,4 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
         return null;
     }
 
-}
+}*/

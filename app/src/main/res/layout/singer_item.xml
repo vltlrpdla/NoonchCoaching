@@ -17,7 +17,7 @@
         android:scaleType="fitXY"
         android:layout_centerVertical="true"
         android:src="@drawable/noon_widget_icon"
-        android:layout_toRightOf="@id/data_scroll_view" />
+        />
 
     <LinearLayout
         android:orientation="vertical"

@@ -49,8 +49,8 @@ public class GetFood extends BroadcastReceiver {
         String param2 = "tbName=anniv&col=food_name&SoL=S&date="+today_S;
         String param3 =  "tbName=anniv&col=food_name&SoL=L&date="+today_L;
 
-        foodDbJson fD = new foodDbJson();
-        fD.execute(param,param2,param3);
+        //foodDbJson fD = new foodDbJson();
+        //fD.execute(param,param2,param3);
 
         try {
             Log.i("aaaa", "-----------------------------" + staticMerge.temp);
@@ -89,8 +89,8 @@ public class GetFood extends BroadcastReceiver {
         String param2 = "tbName=anniv&col=food_name&SoL=S&date="+today_S;
         String param3 =  "tbName=anniv&col=food_name&SoL=L&date="+today_L;
 
-        foodDbJson fD = new foodDbJson();
-        fD.execute(param, param2, param3);
+        //foodDbJson fD = new foodDbJson();
+        //fD.execute(param, param2, param3);
 
         try {
             Log.i("aaaa", "-----------------------------" + staticMerge.temp);

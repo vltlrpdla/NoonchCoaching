@@ -21,6 +21,22 @@ public class Item implements Serializable {
     public String direction;
     public String addressBCode;
 
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     public String getTitle() {
         return title;
     }

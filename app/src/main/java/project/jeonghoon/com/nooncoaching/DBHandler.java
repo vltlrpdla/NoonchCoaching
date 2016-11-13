@@ -148,14 +148,57 @@ public class DBHandler {
                 db.execSQL("INSERT INTO food_favor (title, category, imageUrl, phone, address) " +
                         "VALUES ('" + item.getTitle() + "', '" + item.getCategory() + "', '" + item.getImageUrl() + "', '" + item.getPhone() + "','" + item.getAddress() + "');");
             }else {
-                return false;
+                return true;
             }
         }catch (Exception e){
+            Log.d("DBHandler","오류난다 친구야")
+;            e.printStackTrace();
             return false;
         }
 
         return true;
     }
+
+    public boolean selectDataWithWhere(String title){
+
+        Cursor cursor= null;
+        cursor = db.rawQuery("select * from food_favor where title ='"+ title + "';", null);
+
+
+        if ( cursor.getCount() <= 0 ){
+            return true;
+        }
+
+        return false;
+    }
+
+    //category TEXT, weather TEXT, weight INTEGER
+    public void stored_data_insert(){
+        String weather = "맑음";
+        String endOfCategory = endCategory(item.category);
+
+        int weight = 1;
+
+        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
+
+        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
+        if ( beforeWeight != 0 ){
+
+            updateStoredData(endOfCategory, beforeWeight + 1 );
+
+        }else{
+
+            try{
+                db.execSQL("INSERT INTO stored_data VALUES(null, '" + endOfCategory + "','" + weather + "'," + weight + ");");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+
+    }
+
 
     public boolean deleteFavorItem(FavorItem far){
         try{
@@ -171,7 +214,7 @@ public class DBHandler {
         ArrayList<FavorItem> FavorItems = new ArrayList<>();
         Cursor cursor= null;
         cursor = db.rawQuery("select * from food_favor;", null);
-        Log.i("aaaa",""+cursor.getCount());
+        Log.i("DBHandler",""+cursor.getCount());
 
         if(cursor.getCount() <= 0)
             return null;
@@ -272,7 +315,9 @@ public class DBHandler {
         return null;
     }
 
-    public String selectFood(){
+    public String[] selectFood(){
+
+        String recommendList[] = new String[10];
         String sql = "select * from stored_data order by weight desc;";
         Cursor cursor = null;
         cursor = db.rawQuery(sql, null);
@@ -283,59 +328,34 @@ public class DBHandler {
         int weather = cursor.getColumnIndex("weather");
 
 
+
         if(cursor.getCount() <=0){
-            for (int i = 0; i < 10; i++){
-                staticMerge.recommendation_category[i] ="empty";
-            }
+                for (int i = 0; i < 10; i++){
+                    recommendList[i] ="empty";
+                }
+
         }
 
 
-        int i  = 0 ;
+        int i  = 1 ;
+        recommendList[0] = cursor.getString(category);
         while(cursor.moveToNext()){
 
-            staticMerge.recommendation_category[i] = cursor.getString(category);
+            recommendList[i] = cursor.getString(category);
+            Log.d("DBHandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
+
             i++;
-
-            Log.d("Dbhandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
-
-            if ( i == 10 ){
+            if ( i == 10){
                 break;
             }
 
-
-
         }
 
-        return null;
+        return recommendList;
 
 
     }
-    //category TEXT, weather TEXT, weight INTEGER
-    public void stored_data_insert(){
-        String weather = "맑음";
-        String endOfCategory = endCategory(item.category);
 
-        int weight = 1;
-
-        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
-
-        Log.d("DBhandler", "beforeWeight : " + beforeWeight);
-        if ( beforeWeight != 0 ){
-
-            updateStoredData(endOfCategory, beforeWeight + 1 );
-
-        }else{
-
-            try{
-                db.execSQL("INSERT INTO stored_data VALUES(null, '" + endOfCategory + "','" + weather + "'," + weight + ");");
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
-        }
-
-
-    }
 
     public boolean updateStoredData(String category, int afterweight){
 
@@ -373,19 +393,6 @@ public class DBHandler {
 
         return beforeweight;
 
-    }
-
-    public boolean selectDataWithWhere(String title){
-
-        Cursor cursor= null;
-        cursor = db.rawQuery("select * from food_favor where title ='"+ title + "';", null);
-
-
-        if ( cursor.getCount() <= 0 ){
-            return true;
-        }
-
-        return false;
     }
 
     public String endCategory(String inputString){

@@ -63,7 +63,7 @@
         <activity
             android:name=".SummarizationActivity"
             android:label="@string/title_activity_summarization"
-            android:theme="@style/MyMaterialTheme"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

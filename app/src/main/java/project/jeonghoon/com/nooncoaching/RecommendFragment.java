@@ -1,47 +1,40 @@
 package project.jeonghoon.com.nooncoaching;
 
-import android.content.Intent;
-import android.net.Uri;
+
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import net.daum.mf.map.api.MapPOIItem;
-import net.daum.mf.map.api.MapPoint;
-import net.daum.mf.map.api.MapView;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecommendFragment extends Fragment {
 
-
-
     private String[] tabs = {"기념일추천", "맞춤추천", "가까운거리추천", "무작위추천"};
-    MapView mapView;
-    TextView nameTv = null;
-    TextView telTv  = null;
-    TextView cateTv = null;
-    TextView addrTv = null;
-    ImageView foodImg = null;
-    Spinner SP2 =null;
-    Button SelectBtn = null;
-    ViewGroup mapViewContainer = null;
     ViewGroup rootView;
-
-
     //Data
+    private RecyclerView recyclerView;
+    private ItemsAdapter adapter;
+    private List<Item> ItemList;
+    double latitude;
+    double longitude;
+    int radius = 10000; // 중심 좌표부터의 반경거리. 특정 지역을 중심으로 검색하려고 할 경우 사용. meter 단위 (0 ~ 10000)
+    int page = 1;
+    String apikey = MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY;
+    String defaultImageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
+    private GpsInfo gps;
 
 
     @Nullable
@@ -50,11 +43,10 @@ public class RecommendFragment extends Fragment {
         rootView = (ViewGroup) inflater.inflate(R.layout.fragment_recommend, container, false);
 
 
-
         SharedInit SI = new SharedInit(MainActivity.mContext);
         registerAlarm rA = new registerAlarm(MainActivity.mContext);
 
-        rA.registerWT("Weather.a");
+        //rA.registerWT("Weather.a");
         rA.registerDong("Detailaddr");
 
         if(!SI.getSharedTrue("isCreate")){
@@ -62,34 +54,24 @@ public class RecommendFragment extends Fragment {
             rA.registerplace();
         }
 
+        gps = new GpsInfo(getActivity());
+        latitude = gps.getLatitude();
+        longitude = gps.getLongitude();
 
 
-        nameTv = (TextView)rootView.findViewById(R.id.nameView);
-        telTv = (TextView)rootView.findViewById(R.id.telView);
-        cateTv = (TextView)rootView.findViewById(R.id.cateView);
-        addrTv = (TextView)rootView.findViewById(R.id.addrView);
-        foodImg = (ImageView)rootView.findViewById(R.id.cookImage);
-        SP2 = (Spinner)rootView.findViewById(R.id.spinner2);
-        SelectBtn = (Button)rootView.findViewById(R.id.check);
-        final ArrayList<String> arraylist2 = new ArrayList<String>();
-        arraylist2.add("추천1");
-        arraylist2.add("추천2");
-        arraylist2.add("추천3");
-        arraylist2.add("추천4");
-        arraylist2.add("추천5");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.mContext,
-                android.R.layout.simple_spinner_dropdown_item, arraylist2);
-        SP2.setAdapter(adapter);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
-        mapViewContainer = (ViewGroup) rootView.findViewById(R.id.map_view);
-        mapViewContainer.removeAllViews();
-        mapView = null;
-        mapView = new MapView(getActivity());
-        mapView.setDaumMapApiKey("9db6272582177f1d7b0643e35e1993e9");
-        mapViewContainer.addView(mapView);
+        ItemList = new ArrayList<>();
+        adapter = new ItemsAdapter(getActivity(), ItemList);
 
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
 
-        SetFoodViewItem(0);
+        prepareItems(0);
+
         TabLayout tabs = (TabLayout) rootView.findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("기념일"));
         tabs.addTab(tabs.newTab().setText("맞춤"));
@@ -101,156 +83,120 @@ public class RecommendFragment extends Fragment {
         return rootView;
     }
 
+    private void prepareItems(int type) {
+        //여기서 AsyncTask의 리턴값을 List로 받아야함 받아 온 후 화면에 적용
+        // 맞춤 추천 같은 경우는 상위 5가지의 태그값을 스트링으로 가져와서 검색어로 입력하면 되고--> 굳이 api를 사용하는데 Asynk를 중첩해서 쓸 필요가 없다.
+        // 무작위나 거리같은 경우는 그냥 쓰면 된다.
+        // 기념일만 따로 처리해주면 될듯 하다.
+        switch (type) {
+
+            case 0:
+
+                break;
+            case 1:
+
+                //처음에 내부 db에 질의 후에 키워드가 있는지 없는지 ...--- 날씨와 위치를 가져오는것이 이미 완료 돼 있어야함 ---로딩 시간을 주고 날씨와 위치를 가져오는것이 확실시 돼야
+                //
+                DBHandler dh = DBHandler.open(MainActivity.mContext);
+
+                String foodList[] = new String[0];
+
+                foodList = dh.selectFood();
+
+                if(foodList == null || foodList.equals("empty")){
+                    showToast("검색된 아이템이 없습니다.");
+                }else{
+
+                    String query = foodList[0];
+                    Searcher searcher2 = new Searcher();
+                    searcher2.searchKeyword(MainActivity.mContext,query , latitude, longitude, radius, page,  MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
+                        @Override
+                        public void onSuccess(List<Item> itemList) {
+                            showResult(itemList);
+                        }
+                        @Override
+                        public void onFail() {
+                            showToast("검색된 아이템이 없습니다.");
+                        }
+                    });
+                }
+
+                break;
+            case 2:
+                OldSearcher distanceSearcher = new OldSearcher();
+                distanceSearcher.searchCategory(MainActivity.mContext, "FD6", latitude, longitude, radius, page,2,  MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
+                    @Override
+                    public void onSuccess(List<Item> itemList) {
+                        showResult(itemList);
+                    }
+                    @Override
+                    public void onFail() {
+                        showToast("검색된 아이템이 없습니다.");
+                    }
+                });
+                break;
+            case 3:
+                OldSearcher randomSearcher = new OldSearcher();
+                randomSearcher.searchCategory(MainActivity.mContext, "FD6", latitude, longitude, radius, page,1,  MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
+                    @Override
+                    public void onSuccess(List<Item> itemList) {
+                        showResult(itemList);
+                    }
+                    @Override
+                    public void onFail() {
+                        showToast("검색된 아이템이 없습니다.");
+                    }
+                });
+                break;
+        }
+
+
+    }
+
+    private void showResult(List<Item> itemList) {
+
+        adapter.Clear();
+
+        for (int i = 0; i < itemList.size(); i++) {
+            Item item = itemList.get(i);
+
+            //url 이미지가 없으면 그냥 default 이미지 넣어줌
+            if(item.getImageUrl().equals("")){
+                item.setImageUrl(defaultImageUrl);
+            }
+
+            ItemList.add(itemList.get(i));
+
+        }
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+    }
+
     public class TabListen implements TabLayout.OnTabSelectedListener{
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
 
             int position = tab.getPosition();
-            int size = MainActivity.ThemaItem.size();
             Log.d("MainActivity", "선택된 탭 : " + position);
 
             switch (position) {
                 case 0:
-                    if(size>=0) {
-                        SetFoodViewItem(0);
-                        if(MainActivity.ThemaItem.size()>0){
-                            SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    switch (position){
-                                        case 0:
-                                            SetFoodViewItem(0);
-                                            break;
-                                        case 1:
-                                            SetFoodViewItem(1);
-                                            break;
-                                        case 2:
-                                            SetFoodViewItem(2);
-                                            break;
-                                        case 3:
-                                            SetFoodViewItem(3);
-                                            break;
-                                        case 4:
-                                            SetFoodViewItem(4);
-                                            break;
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(0);
-                                }
-                            });
-                        }
-                    }
-                    SP2.setSelection(0, true);
+                    prepareItems(0);
                     break;
                 case 1:
-                    if(size>=5) {
-                        SetFoodViewItem(5);
-                        if(MainActivity.ThemaItem.size()>0){
-                            SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    switch (position){
-                                        case 0:
-                                            SetFoodViewItem(5);
-                                            break;
-                                        case 1:
-                                            SetFoodViewItem(6);
-                                            break;
-                                        case 2:
-                                            SetFoodViewItem(7);
-                                            break;
-                                        case 3:
-                                            SetFoodViewItem(8);
-                                            break;
-                                        case 4:
-                                            SetFoodViewItem(9);
-                                            break;
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(5);
-                                }
-                            });
-                        }
-                    }
-                    SP2.setSelection(0);
+                    prepareItems(1);
                     break;
                 case 2:
-                    if(size>=10) {
-                        SetFoodViewItem(10);
-                        if(MainActivity.ThemaItem.size()>0){
-                            SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                    switch (position){
-                                        case 0:
-                                            SetFoodViewItem(10);
-                                            break;
-                                        case 1:
-                                            SetFoodViewItem(11);
-                                            break;
-                                        case 2:
-                                            SetFoodViewItem(12);
-                                            break;
-                                        case 3:
-                                            SetFoodViewItem(13);
-                                            break;
-                                        case 4:
-                                            SetFoodViewItem(14);
-                                            break;
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(10);
-                                }
-                            });
-                        }
-                    }
-                    SP2.setSelection(0);
+                    prepareItems(2);
                     break;
                 case 3:
-                    if(size>=15) {
-                        SetFoodViewItem(15);
-                        if(MainActivity.ThemaItem.size()>0){
-                            SP2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                                    switch (position){
-                                        case 0:
-                                            SetFoodViewItem(15);
-                                            break;
-                                        case 1:
-                                            SetFoodViewItem(16);
-                                            break;
-                                        case 2:
-                                            SetFoodViewItem(17);
-                                            break;
-                                        case 3:
-                                            SetFoodViewItem(18);
-                                            break;
-                                        case 4:
-                                            SetFoodViewItem(19);
-                                            break;
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-                                    SetFoodViewItem(15);
-                                }
-                            });
-                        }
-                    }
-                    SP2.setSelection(0);
+                    prepareItems(3);
                     break;
             }
         }
@@ -265,81 +211,80 @@ public class RecommendFragment extends Fragment {
 
         }
 
-
     }
-
-
 
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
+        /*
         SaveData svData = new SaveData(MainActivity.mContext);
         if(svData.isFood()){
             MainActivity.ThemaItem = svData.getFood("SharedFood");
             Log.i("aaaa", "222222222222222222222222222" + MainActivity.ThemaItem.get(0).title);
-        }
+        }*/
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        SaveData svData = new SaveData(MainActivity.mContext);
-        svData.save("SharedNews");
-        svData.save("SharedFood");
+
     }
-    public void SetFoodViewItem(final int index){
-        mapView.removeAllPOIItems();
-        Item in1 = MainActivity.ThemaItem.get(index);
-        MapPOIItem marker = new MapPOIItem();
-        nameTv.setText("" + in1.title);
-        telTv.setText("" + in1.phone);
-        cateTv.setText("" + in1.category);
-        addrTv.setText("" + in1.address);
-        if(in1.imageUrl.equals("")){
-            in1.imageUrl ="http://222.116.135.79:8080/Noon/images/noon.png";
-            new DownloadImageTask(foodImg).execute(in1.imageUrl);
-        }else{
-            new DownloadImageTask(foodImg).execute(in1.imageUrl);
+
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
         }
-        telTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Item in1 = MainActivity.ThemaItem.get(index);
-                Intent intent = new Intent(Intent.ACTION_DIAL,Uri.parse("tel:"+in1.phone));
-                startActivity(intent);
-            }
-        });
-        SelectBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Item in1 = MainActivity.ThemaItem.get(index);
-                DBHandler dbHandler = DBHandler.open(MainActivity.mContext, in1);
-                dbHandler.click_time();
-                boolean flag = dbHandler.insertFavorItem();
-                if ( flag ){
-                    Log.d("wert3738","입력 실패");
-                }else{
-                    Toast.makeText(getActivity(),"입력완료",Toast.LENGTH_LONG).show();
-                    Log.d("wert3738","입력 완료");
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
                 }
-                dbHandler.stored_data_insert();
-                dbHandler.selectFood();
-                dbHandler.close();
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
 
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    private void showToast(final String text) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
             }
         });
-        marker.setItemName("Default Marker");
-        marker.setTag(0);
-        marker.setMapPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude));
-        marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
-        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(in1.latitude, in1.longitude), true);
-        mapView.addPOIItem(marker);
     }
+
 }

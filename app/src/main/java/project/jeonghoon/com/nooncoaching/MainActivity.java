@@ -18,8 +18,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -30,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     ThirdFragment thirdFragment;
     //Fragment4 fragment4;
     public static Context mContext;
-    public static ArrayList<Item> ThemaItem = new ArrayList<Item>();
     private GpsInfo gps;
     TabLayout tabs;
 
@@ -40,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = this;
 
-        if(ThemaItem.isEmpty()) {
-            make_dummy();
-        }
+        //여기서 위치와 날씨를 받아서 각 프래그먼트 생성시에 번들값으로 넘겨줘서 필터링으로 쓸수 있도록 전역변수를 사용하지 않아야한다.
         Log.d(LOG_TAG, "앱 진입");
 
         gps = new GpsInfo(MainActivity.this);
@@ -52,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
             staticMerge.latitude = gps.getLatitude();
             staticMerge.longitude = gps.getLongitude();
 
-            registerAlarm rA = new registerAlarm(getApplicationContext());
-            rA.testAM2("ACTION.GET.NORMAL", 1);
             Toast.makeText(this, "새 추천이 도착했습니다.", Toast.LENGTH_SHORT).show();
+
+            //여기서 위치와 날씨를 가져왔으면 한다.
+
 
            // Toast.makeText(
            //         getApplicationContext(),
@@ -143,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,33 +208,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        SaveData svData = new SaveData(this);
-        if(svData.isFood()){
-            ThemaItem = svData.getFood("SharedFood");
-            Log.i("aaaa", "222222222222222222222222222" + ThemaItem.get(0).title);
-        }
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        SaveData svData = new SaveData(this);
-        svData.save("SharedNews");
-        svData.save("SharedFood");
     }
 
-    public void make_dummy() {
-
-        for (int i=1; i<21;i++) {
-            Item item = new Item();
-            item.title = "(X)title"+i;
-            item.category = "(X)category"+i;
-            item.address = "(X) add ress"+i;
-            item.imageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
-            item.phone = "010-2043-5392";
-            ThemaItem.add(i-1,item);
-        }
-
-    }
 
 }
