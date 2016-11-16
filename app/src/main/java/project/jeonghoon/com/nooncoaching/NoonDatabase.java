@@ -30,7 +30,7 @@ public class NoonDatabase extends SQLiteOpenHelper {
                 "subject TEXT, year INTEGER, month INTEGER,day INTEGER, cate TEXT);";
         String CREATE_SQL5 = "CREATE TABLE IF NOT EXISTS food_favor" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT);";
+                "title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT, latitude REAL, longitude REAL);";
         String CREATE_SQL6 = "CREATE TABLE IF NOT EXISTS stored_data" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "category TEXT, weather TEXT, weight INTEGER);";

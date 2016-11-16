@@ -17,14 +17,20 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ThirdFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private FavorItemAdapter adapter;
+    private ItemsAdapter adapter;
+    private List<Item> ItemList;
     DBHandler dbHandler;
+    //ArrayList<FavorItem> FavorItems;
     ArrayList<FavorItem> FavorItems;
     String defaultImageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
+    String address = "";
+    private static final String LOG_TAG = "ThirdFragment";
+
 
 
     @Nullable
@@ -39,13 +45,19 @@ public class ThirdFragment extends Fragment {
         //recyclerView.setLayoutManager(layoutManager);
 
         // set adapter
-        adapter = new FavorItemAdapter(getActivity().getApplicationContext());
+        //adapter = new FavorItemAdapter(getActivity().getApplicationContext());
+        ItemList = new ArrayList<>();
+        adapter = new ItemsAdapter(getActivity(), ItemList);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        address = getArguments().getString("address");
+
+        Log.d(LOG_TAG,"address "+ address);
 
         prepareItems(0);
 
@@ -62,9 +74,10 @@ public class ThirdFragment extends Fragment {
     }
 
     private void prepareItems(int type) {
+
         switch(type) {
             case 0:
-                adapter.Clear();
+                adapter.clear();
 
                 dbHandler = DBHandler.open(MainActivity.mContext);
                 FavorItems = dbHandler.selectFavorItem();
@@ -77,14 +90,14 @@ public class ThirdFragment extends Fragment {
                     String beforeSplitCategory = FavorItems.get(i).getCategory();
                     String ca[] = beforeSplitCategory.split(" > ");
 
-                    if (ca[1].equals("한식")) {
-                        if (ad[1].equals(staticMerge.si)) {
+                    if (ad[1].equals(address)) {
+                        if (ca[1].equals("한식")) {
 
                             if(FavorItems.get(i).getImageUrl().equals("")){
                                 FavorItems.get(i).setImageUrl(defaultImageUrl);
                             }
 
-                            adapter.addItem(FavorItems.get(i));
+                            ItemList.add(FavorItems.get(i));
                         }
                     }
                 }
@@ -95,11 +108,9 @@ public class ThirdFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 });
-
-                //recyclerView.setAdapter(adapter);
                 break;
             case 1:
-                adapter.Clear();
+                adapter.clear();
 
                 dbHandler = DBHandler.open(MainActivity.mContext);
                 FavorItems = dbHandler.selectFavorItem();
@@ -112,14 +123,14 @@ public class ThirdFragment extends Fragment {
                     String beforeSplitCategory = FavorItems.get(i).getCategory();
                     String ca[] = beforeSplitCategory.split(" > ");
 
-                    if(ad[1].equals(staticMerge.si)) {
+                    if (ad[1].equals(address)) {
                         if (ca[1].equals("일식")) {
 
                             if(FavorItems.get(i).getImageUrl().equals("")){
                                 FavorItems.get(i).setImageUrl(defaultImageUrl);
                             }
 
-                            adapter.addItem(FavorItems.get(i));
+                            ItemList.add(FavorItems.get(i));
                         }
                     }
                 }
@@ -130,11 +141,9 @@ public class ThirdFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 });
-
-                //recyclerView.setAdapter(adapter);
                 break;
             case 2:
-                adapter.Clear();
+                adapter.clear();
 
                 dbHandler = DBHandler.open(MainActivity.mContext);
                 FavorItems = dbHandler.selectFavorItem();
@@ -147,14 +156,14 @@ public class ThirdFragment extends Fragment {
                     String beforeSplitCategory = FavorItems.get(i).getCategory();
                     String ca[] = beforeSplitCategory.split(" > ");
 
-                    if(ad[1].equals(staticMerge.si)) {
+                    if (ad[1].equals(address)) {
                         if (ca[1].equals("중식")) {
 
                             if(FavorItems.get(i).getImageUrl().equals("")){
                                 FavorItems.get(i).setImageUrl(defaultImageUrl);
                             }
 
-                            adapter.addItem(FavorItems.get(i));
+                            ItemList.add(FavorItems.get(i));
                         }
                     }
                 }
@@ -165,11 +174,9 @@ public class ThirdFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 });
-
-                //recyclerView.setAdapter(adapter);
                 break;
             case 3:
-                adapter.Clear();
+                adapter.clear();
 
                 dbHandler = DBHandler.open(MainActivity.mContext);
                 FavorItems = dbHandler.selectFavorItem();
@@ -182,14 +189,14 @@ public class ThirdFragment extends Fragment {
                     String beforeSplitCategory = FavorItems.get(i).getCategory();
                     String ca[] = beforeSplitCategory.split(" > ");
 
-                    if (ad[1].equals(staticMerge.si)) {
+                    if (ad[1].equals(address)) {
                         if (ca[1].equals("양식")) {
 
                             if(FavorItems.get(i).getImageUrl().equals("")){
                                 FavorItems.get(i).setImageUrl(defaultImageUrl);
                             }
 
-                            adapter.addItem(FavorItems.get(i));
+                            ItemList.add(FavorItems.get(i));
                         }
                     }
                 }
@@ -200,11 +207,9 @@ public class ThirdFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 });
-
-                //recyclerView.setAdapter(adapter);
                 break;
             case 4:
-                adapter.Clear();
+                adapter.clear();
 
                 dbHandler = DBHandler.open(MainActivity.mContext);
                 FavorItems = dbHandler.selectFavorItem();
@@ -217,14 +222,14 @@ public class ThirdFragment extends Fragment {
                     String beforeSplitCategory = FavorItems.get(i).getCategory();
                     String ca[] = beforeSplitCategory.split(" > ");
 
-                    if (ad[1].equals(staticMerge.si)) {
+                    if (ad[1].equals(address)) {
                         if (!(ca[1].equals("한식") | ca[1].equals("일식") | ca[1].equals("중식") | ca[1].equals("양식"))) {
 
                             if(FavorItems.get(i).getImageUrl().equals("")){
                                 FavorItems.get(i).setImageUrl(defaultImageUrl);
                             }
 
-                            adapter.addItem(FavorItems.get(i));
+                            ItemList.add(FavorItems.get(i));
                         }
                     }
                 }
@@ -235,8 +240,6 @@ public class ThirdFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 });
-
-                //recyclerView.setAdapter(adapter);
                 break;
         }
     }

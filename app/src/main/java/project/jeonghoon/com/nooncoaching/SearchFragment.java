@@ -113,7 +113,7 @@ public class SearchFragment extends Fragment {
 
     private void showResult(List<Item> itemList) {
 
-        adapter.Clear();
+        adapter.clear();
 
         for (int i = 0; i < itemList.size(); i++) {
             Item item = itemList.get(i);

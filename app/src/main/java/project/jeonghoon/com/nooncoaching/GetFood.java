@@ -64,6 +64,7 @@ public class GetFood extends BroadcastReceiver {
             e.printStackTrace(new PrintWriter(sw));
             String exceptionAsStrting = sw.toString();
             Log.e("aaaa", exceptionAsStrting);
+
         }
 
 

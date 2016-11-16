@@ -943,6 +943,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             Log.e("error", exceptionAsStrting);
         }
 
+        // 오늘에 해당하는 기념일이 있는지 검색하려나 보다
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat CurMonthFormat = new SimpleDateFormat("MM");
@@ -955,6 +956,12 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
         ArrayList<Anni> Annis = dh.selectAnniWithWhere(month-1, day);
         String food_nameAnniv = "";
 
+        // 받아온 기념일 객체가 없다면 이 루틴 영번째 파람은 날씨와 관련된 파람---음력과 양력에 관한 것
+        // 첫번째 파람은 primary 키:양력 날씨 에 해당하는 음식이 있는지에 대한 검사
+        // 두번째는 같은 방법으로 음력
+        //0  String param = "tbName=noon_food&col=food_name&food_wea="+weather+"&food_time="+query;
+        //1  String param2 = "tbName=anniv&col=food_name&SoL=S&date="+today_S;
+        //2  String param3 =  "tbName=anniv&col=food_name&SoL=L&date="+today_L;
         if(Annis == null){
             try {
                 URL url = new URL("http://222.116.135.79:8080/Noon/createJson.jsp?" + params[1]);
@@ -1066,7 +1073,7 @@ public class foodDbJson extends AsyncTask<String,Void,Void> {
             }else{
                 staticMerge.finish_food[3]=food_nameAnniv;
             }
-        }else{
+        }else{//여기가 끝 ㅋㅋㅋㅋ
             staticMerge.finish_food[3] = "empty";
             staticMerge.finish_food[4] = Annis.get(0).getCate();
         }

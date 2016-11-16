@@ -13,12 +13,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import java.util.Scanner;
 
-import static project.jeonghoon.com.nooncoaching.staticMerge.idTotemp;
 import static project.jeonghoon.com.nooncoaching.staticMerge.saveAddr;
-import static project.jeonghoon.com.nooncoaching.staticMerge.temp;
 
 /**
  * Created by kku on 2016-11-13.
@@ -27,8 +24,8 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
 
     // 추천 액티비티의 내용이 길어질 것을 예상하고
     private Context mContext;
-
-    ProgressDialog asyncDialog = new ProgressDialog(mContext);
+    private static final String LOG_TAG = "GetDataTask";
+    ProgressDialog asyncDialog;
 
     public GetDataTask(Context mContext) {
         this.mContext = mContext;
@@ -36,6 +33,8 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
 
     @Override
     protected void onPreExecute() {
+
+        asyncDialog = new ProgressDialog(mContext);
         asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         asyncDialog.setMessage("로딩중입니다..");
 
@@ -80,8 +79,11 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
             JSONArray results = searchresult.getJSONArray("weather");
             JSONObject json = new JSONObject();
             json = results.getJSONObject(0);
-            int id = json.getInt("id");
-            idTotemp(id);
+            String weather = json.getString("main");
+            //Log.d(LOG_TAG,"weather " + weather);
+            //int id = json.getInt("id");
+            //Log.d(LOG_TAG,"id " + id);
+            acceptedData[0] = weather;
 
             String UUU2 = "https://apis.daum.net/local/geo/coord2detailaddr?apikey=704c8f7bbfab6a07aa2fd61bf544d9f7&x="+lon+"&y="+lati+"&inputCoordSystem=WGS84&output=json";
             URL url2 = new URL(UUU2);
@@ -92,12 +94,12 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
             conn2.setDoInput(true);
             conn2.connect();
 
-            InputStream is2 = conn.getInputStream();
+            InputStream is2 = conn2.getInputStream();
             Scanner s2 = new Scanner(is2);
             String str2 = "";
             while (s2.hasNext())
-                str2 += s.nextLine();
-            is.close();
+                str2 += s2.nextLine();
+            is2.close();
             Log.i("json:", str2);
 
             JSONObject searchresult2 = new JSONObject(str2);
@@ -114,9 +116,12 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
             dong = temp[2];
 
             Log.i("aaaa","si,dong,bunji:"+si+","+dong+","+bunji);
+            //수정해야할 부분
             saveAddr(MainActivity.mContext, si, dong, bunji);
 
-            return str2;
+            acceptedData[1] = temp[1];
+
+            return acceptedData;
         }
         catch(Exception t) {
             StringWriter sw = new StringWriter();
@@ -131,58 +136,43 @@ public class GetDataTask extends AsyncTask<Double,Void,String[]> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
-
-        try{
-            JSONObject searchresult = new JSONObject(s);
-            JSONArray results = searchresult.getJSONArray("weather");
-            JSONObject json = new JSONObject();
-            json = results.getJSONObject(0);
-            int id = json.getInt("id");
-            idTotemp(id);
-        }catch (Exception e){
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsStrting = sw.toString();
-            Log.e("aaaa", exceptionAsStrting);
-        }
-        Log.i("aaaa", temp + "- now weather");
-
-        String temp[];
-        String temp1;
-        String si="";
-        String dong="";
-        String bunji="";
-
-        try{
-            JSONObject searchresult = new JSONObject(s);
-
-            JSONObject json = new JSONObject();
-            temp1 = searchresult.getString("region");
-            json = searchresult.getJSONObject("old");
-            bunji = json.getString("bunji");
-            if(!json.getString("ho").equals("")) {
-                bunji += "-"+json.getString("ho");
-            }
-            temp = temp1.split(" ");
-            si = temp[1];
-            dong = temp[2];
-
-        }catch (Exception e){
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsStrting = sw.toString();
-            Log.e("aaaa", exceptionAsStrting);
-        }
-        Log.i("aaaa","si,dong,bunji:"+si+","+dong+","+bunji);
-        saveAddr(MainActivity.mContext, si, dong, bunji);
-
-        //staticMerge.dong = dong;
-        //staticMerge.bunji = bunji;
-        //동 이름 result
+    protected void onPostExecute(String[] s) {
 
         asyncDialog.dismiss();
 
         super.onPostExecute(s);
     }
+
+
+
+    public String idTotemp (int i) {
+        String temp="";
+
+        if(200<=i && i<300) {
+            temp = "thunderstorm";
+        } else if(500<=i && i<600) {
+            temp = "rain";
+        } else if(600<=i && i<700){
+            temp = "snow";
+        } else if ( i==761) {
+            temp = "dust";
+        } else if(i == 800) {
+            temp = "clear";
+        } else if(800<i && i<900) {
+            temp = "clouds";
+        } else if(i == 903) {
+            temp = "cold";
+        } else if(i==904) {
+            temp = "hot";
+        } else if(i==905) {
+            temp = "windy";
+        } else if(i==902) {
+            temp = "hurricane";
+        } else if(i == 960) {
+            temp = "storm";
+        }
+
+        return temp;
+    }
+
 }

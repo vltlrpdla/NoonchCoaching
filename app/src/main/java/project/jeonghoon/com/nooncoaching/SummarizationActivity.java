@@ -7,6 +7,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +38,7 @@ public class SummarizationActivity extends AppCompatActivity implements MapView.
     double latitude;
     double longitude;
     Item selectedItem;
+    private static final String LOG_TAG = "SummarizationActivity";
 
 
     @Override
@@ -60,10 +62,13 @@ public class SummarizationActivity extends AppCompatActivity implements MapView.
 
         Intent intent = getIntent();
         selectedItem = (Item) intent.getSerializableExtra("ITEM");
+
         latitude = selectedItem.getLatitude();
         longitude = selectedItem.getLongitude();
 
         textTitle.setText(selectedItem.getTitle());
+
+        Log.d(LOG_TAG,"latitude " + latitude + "longitude " + longitude);
 
 
         try {
@@ -118,10 +123,10 @@ public class SummarizationActivity extends AppCompatActivity implements MapView.
             if (item == null) return null;
             ImageView imageViewBadge = (ImageView) mCalloutBalloon.findViewById(R.id.badge);
             TextView textViewTitle = (TextView) mCalloutBalloon.findViewById(R.id.title);
-            textViewTitle.setText(item.title);
+            textViewTitle.setText(item.getTitle());
             TextView textViewDesc = (TextView) mCalloutBalloon.findViewById(R.id.desc);
-            textViewDesc.setText(item.address);
-            imageViewBadge.setImageDrawable(createDrawableFromUrl(item.imageUrl));
+            textViewDesc.setText(item.getAddress());
+            imageViewBadge.setImageDrawable(createDrawableFromUrl(item.getImageUrl()));
             return mCalloutBalloon;
         }
 
@@ -157,9 +162,9 @@ public class SummarizationActivity extends AppCompatActivity implements MapView.
 
 
             MapPOIItem poiItem = new MapPOIItem();
-            poiItem.setItemName(item.title);
+            poiItem.setItemName(item.getTitle());
             poiItem.setTag(0);
-            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(item.latitude, item.longitude);
+            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(item.getLatitude(), item.getLongitude());
             poiItem.setMapPoint(mapPoint);
             mapPointBounds.add(mapPoint);
             poiItem.setMarkerType(MapPOIItem.MarkerType.CustomImage);

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public static Context mContext;
     private GpsInfo gps;
     TabLayout tabs;
+    String acceptedData[] = new String[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,13 @@ public class MainActivity extends AppCompatActivity {
 
             //여기서 위치와 날씨를 가져왔으면 한다.
             GetDataTask d = new GetDataTask(this);
-            d.execute(gps.getLatitude(), gps.getLongitude());
+            try {
+                acceptedData = d.execute(gps.getLatitude(), gps.getLongitude()).get();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
 
+            showToast( "날씨 " + acceptedData[0] + " 위치 " + acceptedData[1]);
 
             // Toast.makeText(
            //         getApplicationContext(),
@@ -75,11 +81,15 @@ public class MainActivity extends AppCompatActivity {
         //actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setIcon(R.drawable.noon_icon);
 
+        Bundle argument = new Bundle();
+        argument.putString("address",acceptedData[1]);
+
 
         fragment1 = new RecommendFragment();
         //fragment2 = new Fragment2();
         searchFragment = new SearchFragment();
         thirdFragment = new ThirdFragment();
+        thirdFragment.setArguments(argument);
         //fragment4 = new Fragment4();
 
 
@@ -216,6 +226,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    private void showToast(final String text) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

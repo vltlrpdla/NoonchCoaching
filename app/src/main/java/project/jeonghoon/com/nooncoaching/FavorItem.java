@@ -3,7 +3,7 @@ package project.jeonghoon.com.nooncoaching;
 /**
  * Created by kku on 2016-03-18.
  */
-public class FavorItem {
+public class FavorItem extends Item {
 //"title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT
     private int seq;
     private String title;
@@ -11,7 +11,28 @@ public class FavorItem {
     private String imageUrl;
     private String phone;
     private String address;
+    public double longitude;
+    public double latitude;
 
+    @Override
+    public double getLongitude() {
+        return longitude;
+    }
+
+    @Override
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    @Override
+    public double getLatitude() {
+        return latitude;
+    }
+
+    @Override
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
     public int getSeq() {
         return seq;

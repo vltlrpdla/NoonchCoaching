@@ -143,10 +143,13 @@ public class DBHandler {
     }
 
     public boolean insertFavorItem(){
+        if (item.getCategory().equals("") || item.getCategory() == null){
+            item.setCategory("http://222.116.135.79:8080/Noon/images/noon.png");
+        }
         try{
             if(selectDataWithWhere(item.getTitle())) {
-                db.execSQL("INSERT INTO food_favor (title, category, imageUrl, phone, address) " +
-                        "VALUES ('" + item.getTitle() + "', '" + item.getCategory() + "', '" + item.getImageUrl() + "', '" + item.getPhone() + "','" + item.getAddress() + "');");
+                db.execSQL("INSERT INTO food_favor (title, category, imageUrl, phone, address, latitude, longitude) " +
+                        "VALUES ('" + item.getTitle() + "', '" + item.getCategory() + "', '" + item.getImageUrl() + "', '" + item.getPhone() + "','" + item.getAddress() + "','" + item.getLatitude() + "','" + item.getLongitude() + "');");
             }else {
                 return true;
             }
@@ -174,6 +177,14 @@ public class DBHandler {
 
     //category TEXT, weather TEXT, weight INTEGER
     public void stored_data_insert(){
+        //응용할 수 있지 않을까 해서 날씨가 흐리거나 맑거나 어떤 음식을 먹는다 , 어떤 카테고리의 음식을 먹는것
+        //시간이 지나면 어떤 날씨엔 어떤 카테고리의 음식을 많이 먹더라라는 정보가 쌓인다
+        //날씨와 시간이 다른 속성으로 정리 돼 있기 때문에 단지 카테고리로만 검색하는 지금은 쓰기 어렵다.
+        //이런 날씨엔 이런 카테고리의 음식을 많이 먹더라 ---> 이게 주 목적
+        //이런 날씨가 이벤트 이런 날씨가 됐을때 --> 이런 날씨로 검색하고 이런 날씨에 해당하는 카테고리로 분류
+        //이런 날씨에 해당하는 카테고리의 종류 중에서 카테고리 weighting을 순차적으로 정렬해서 넘겨준다, sqlite는 seq로 구분하기 때문에 상관없다.
+        //같은 카테고리 여러 날씨 여러 시간 플래그들
+
         String weather = "맑음";
         String endOfCategory = endCategory(item.category);
 
@@ -195,10 +206,42 @@ public class DBHandler {
             }
 
         }
+    }
+
+    public void stored_data_delete(){
+
+
+        //응용할 수 있지 않을까 해서 날씨가 흐리거나 맑거나 어떤 음식을 먹는다 , 어떤 카테고리의 음식을 먹는것
+        //시간이 지나면 어떤 날씨엔 어떤 카테고리의 음식을 많이 먹더라라는 정보가 쌓인다
+        //날씨와 시간이 다른 속성으로 정리 돼 있기 때문에 단지 카테고리로만 검색하는 지금은 쓰기 어렵다.
+        //이런 날씨엔 이런 카테고리의 음식을 많이 먹더라 ---> 이게 주 목적
+        //이런 날씨가 이벤트 이런 날씨가 됐을때 --> 이런 날씨로 검색하고 이런 날씨에 해당하는 카테고리로 분류
+        //이런 날씨에 해당하는 카테고리의 종류 중에서 카테고리 weighting을 순차적으로 정렬해서 넘겨준다, sqlite는 seq로 구분하기 때문에 상관없다.
+
+
+        //1, 현재 아이템이 선택됐다면 현재 선택된 아이템의 카테고리검사와 더불어 현재 날씨를 체크한다.
+        //2, 현재 날씨에 해당하는 현재 카테고리데이터가 내부 데이터베이스에 저장 돼 있는지 검사
+        //3, 저장 돼 있지 않으면 가중치 1로 저장
+        //4, 저장 돼 있다면 가중치를 가져와 +1
+        // 맞춤추천은 날씨로 먼저 검색후 카테고리 가중치순으로 정렬
+        // 이러한 순으로 아침 점심 저녁과 같은 추가적인 방법 가능
+
+        String weather = "맑음";
+        String endOfCategory = endCategory(item.getCategory());
+
+        int weight = 1;
+
+        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
+        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
+
+        if( beforeWeight == 0){
+            beforeWeight = weight;
+        }
+        updateStoredData(endOfCategory, beforeWeight - 1 );
+
 
 
     }
-
 
     public boolean deleteFavorItem(FavorItem far){
         try{
@@ -225,8 +268,11 @@ public class DBHandler {
         int imageUrl = cursor.getColumnIndex("imageUrl");
         int phone = cursor.getColumnIndex("phone");
         int address = cursor.getColumnIndex("address");
+        int latitude = cursor.getColumnIndex("latitude");
+        int longitude = cursor.getColumnIndex("longitude");
 
         while(cursor.moveToNext()){
+
             FavorItem item = new FavorItem();
             item.setSeq(cursor.getInt(_id));
             item.setTitle(cursor.getString(title));
@@ -234,6 +280,9 @@ public class DBHandler {
             item.setImageUrl(cursor.getString(imageUrl));
             item.setPhone(cursor.getString(phone));
             item.setAddress(cursor.getString(address));
+            item.setLatitude(cursor.getDouble(latitude));
+            item.setLongitude(cursor.getDouble(longitude));
+
             FavorItems.add(item);
         }
         return FavorItems;
@@ -333,27 +382,27 @@ public class DBHandler {
                 for (int i = 0; i < 10; i++){
                     recommendList[i] ="empty";
                 }
-
-        }
-
-
-        int i  = 1 ;
-        recommendList[0] = cursor.getString(category);
-        while(cursor.moveToNext()){
-
-            recommendList[i] = cursor.getString(category);
+        }else{
+            int i  = 1 ;
+            recommendList[0] = cursor.getString(category);
             Log.d("DBHandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
+            while(cursor.moveToNext()){
 
-            i++;
-            if ( i == 10){
-                break;
+                recommendList[i] = cursor.getString(category);
+                Log.d("DBHandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
+
+                i++;
+                if ( i == 10){
+                    break;
+                }
             }
 
+            for (int j = i; i < 10; i++){
+                recommendList[i] ="empty";
+            }
         }
 
         return recommendList;
-
-
     }
 
 

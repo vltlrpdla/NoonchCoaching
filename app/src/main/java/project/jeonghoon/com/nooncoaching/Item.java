@@ -20,6 +20,7 @@ public class Item implements Serializable {
     public String placeUrl;
     public String direction;
     public String addressBCode;
+    public int seq;
 
     public double getLongitude() {
         return longitude;
@@ -77,5 +78,11 @@ public class Item implements Serializable {
         this.category = category;
     }
 
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
 
+    public int getSeq() {
+        return seq;
+    }
 }
