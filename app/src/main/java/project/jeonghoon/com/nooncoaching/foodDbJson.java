@@ -3,9 +3,9 @@ package project.jeonghoon.com.nooncoaching;
 /**
  * Created by han on 2015-11-24.
  */
+/**
 
 
-/*
 public class foodDbJson extends AsyncTask<String,Void,Void> {
 
 

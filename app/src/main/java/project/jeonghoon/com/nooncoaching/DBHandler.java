@@ -12,15 +12,40 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by han on 2015-11-24.
  */
 public class DBHandler {
+
+    private static final String LOG_TAG = "DBHandler";
     private NoonDatabase helper;
     private SQLiteDatabase db;
     public static Item item;
     private static int[] pattern = new int[7];
+    //"select * from stored_data order by weight desc;";
+    public static final String SELECTED_CATEGORY_BY_CONTEXT = "select distinct category, max(weight) from stored_data group by category order by max(weight) desc";
+    String weather,address;
+    List<String> foodList;
+    /***
+     * SELECT DISTINCT Category, MAX(CreationDate)
+     FROM MonitoringJob
+     GROUP BY Category
+     ORDER BY MAX(CreationDate) DESC, Category
+     */
+    // 삽입의 경우  현재 날씨,위치,카테고리가 일치하는 튜플이 존재하는가 ? 없다 -> 인서트
+    // 있을경우 해당하는 seq를 가져와서 해당하는 weight+1로 업데이트를 해준다
+
+    // 해당하는 튜플을 검색 날씨와 위치와 카테고리로 검색
+
+    // 가중치의 경우 삭제 -->  ?? ㅎ ㅓ???? 이럴경우에는 튜플이 존재하는지 검색 --> 없다 ? 인서트 -1로 해야할듯
+
+    // 맞춤추천을 한다 생각하면 위치와 날씨로 조회했을때  해당하는 카테고리 정보가 있다 --> add
+    // 없다면 다시 위치로만 조회  현재 위치에 해당하는 다양한 날씨의 중복 카테고리 발생  --> 현재 해당하는 위치에 해당하는 튜플들만 카테고리 기준으로 묶어처리
+    // 현재위치에 해당하는 맛집 데이터가 없다 --> 날씨 데이터만 가지고 조합 --> 날씨데이터에 해당하는 튜플을 가져온다 여러가지 위치에 해당하는 중복 카테고리 하지만 카테고리 기준으로 묶어 가중치순으로 나열
+    // 1번 생성자를 만든다.
+    // 생성자를 통해 건너받은 날씨정보와 위치정보를 통해 삽입하는 튜플부터 시작해서 차례대로 생성해간다. 중간중간 검사하는 로그태그를 통해 확인
     private DBHandler(Context ctx) {
         this.helper = new NoonDatabase(ctx);
         this.db = helper.getWritableDatabase();
@@ -36,10 +61,200 @@ public class DBHandler {
         return handler;
     }
 
+
     public void close() {
         helper.close();
         db.close();
     }
+
+    public void stored_data_insert(String weather,String address){
+        //응용할 수 있지 않을까 해서 날씨가 흐리거나 맑거나 어떤 음식을 먹는다 , 어떤 카테고리의 음식을 먹는것
+        //시간이 지나면 어떤 날씨엔 어떤 카테고리의 음식을 많이 먹더라라는 정보가 쌓인다
+        //날씨와 시간이 다른 속성으로 정리 돼 있기 때문에 단지 카테고리로만 검색하는 지금은 쓰기 어렵다.
+        //이런 날씨엔 이런 카테고리의 음식을 많이 먹더라 ---> 이게 주 목적
+        //이런 날씨가 이벤트 이런 날씨가 됐을때 --> 이런 날씨로 검색하고 이런 날씨에 해당하는 카테고리로 분류
+        //이런 날씨에 해당하는 카테고리의 종류 중에서 카테고리 weighting을 순차적으로 정렬해서 넘겨준다, sqlite는 seq로 구분하기 때문에 상관없다.
+        //같은 카테고리 여러 날씨 여러 시간 플래그들
+
+        this.weather = weather;
+        this.address = address;
+        String endOfCategory = endCategory(item.category);
+
+        int weight = 1;
+
+        int beforeWeight = selectFavorDataWithWhere(endOfCategory, weather, address);
+
+        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
+        //저장되는 favorItem객체 내부에  하... 이것좀 고민해보자 ... 지울 때
+        if ( beforeWeight != Integer.MAX_VALUE ){
+
+            updateStoredData(endOfCategory, weather, address, beforeWeight + 1 );
+
+        }else{
+            //"category TEXT, weather TEXT, address TEXT, weight INTEGER);";
+            try{
+                db.execSQL("INSERT INTO stored_data VALUES(null, '" + endOfCategory
+                        + "','" + weather
+                        + "','" + address
+                        + "'," + weight
+                        + ");");
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public int selectFavorDataWithWhere(String category, String weather, String address){
+
+
+
+        Cursor cursor= null;
+        cursor = db.rawQuery("select * from stored_data where category ='"+ category
+                + "' and weather ='" + weather
+                + "' and address ='" + address
+                + "';", null);
+
+        cursor.moveToFirst();
+
+        if ( cursor.getCount() <= 0 ){
+            return Integer.MAX_VALUE;
+        }
+
+        //category TEXT, weather TEXT, weight INTEGER
+        int categoryIndex = cursor.getColumnIndex("category");
+        int weatherIndex = cursor.getColumnIndex("weather");
+        int weightIndex = cursor.getColumnIndex("weight");
+
+        int beforeweight = cursor.getInt(weightIndex);
+
+        Log.d( LOG_TAG , " selectFavorDataWithWhere");
+
+        return beforeweight;
+
+    }
+
+    public boolean updateStoredData(String category, String weather, String address, int afterweight){
+
+        try{
+            db.execSQL("UPDATE stored_data SET " +
+                    "weight="+afterweight+" WHERE category='" + category
+                    + "' and weather ='" + weather
+                    + "' and address ='" + address
+                    + "';");
+
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+
+    }
+
+
+    public void stored_data_delete(){
+
+        String endOfCategory = endCategory(item.getCategory());
+
+        int weight = 1;
+
+        int beforeWeight = selectGetMaxCategory(endOfCategory);
+        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
+
+        if( beforeWeight == 0){
+            beforeWeight = weight;
+        }
+
+        updateStoredData(endOfCategory, weather, address, beforeWeight - 1 );
+
+    }
+
+    public int selectGetMaxCategory(String category){
+
+        Cursor cursor= null;
+        //"select distinct category, max(weight) from stored_data group by category order by max(weight) desc"
+        cursor = db.rawQuery("select category, weather, address, weight from stored_data where category ='"+ category
+                + "' order by weight desc;", null);
+
+        cursor.moveToFirst();
+
+        if ( cursor.getCount() <= 0 ){
+            return 0;
+        }
+
+        //category TEXT, weather TEXT, weight INTEGER
+        int categoryIndex = cursor.getColumnIndex("category");
+        int weatherIndex = cursor.getColumnIndex("weather");
+        int weightIndex = cursor.getColumnIndex("weight");
+        int addressIndex = cursor.getColumnIndex("address");
+
+        int beforeweight = cursor.getInt(weightIndex);
+        weather = cursor.getString(weatherIndex);
+        address = cursor.getString(addressIndex);
+
+        Log.d( LOG_TAG , " selectGetMaxCategory");
+
+        return beforeweight;
+
+    }
+
+
+    public List<String> selectFood(String weather, String address){
+
+        String recommendList[] = new String[10];
+        String sql = "select * from stored_data where weather ='" + weather
+        + "' and address ='" + address + "' order by weight desc;";
+        String defaultSql = "select distinct category, max(weight) from stored_data group by category order by max(weight) desc";
+        List<String> foodList = new ArrayList<String>();
+
+
+        Cursor cursor1,cursor2 = null;
+        cursor1 = db.rawQuery(sql, null);
+
+        cursor1.moveToFirst();
+
+
+        int categoryIndex = cursor1.getColumnIndex("category");
+        int weightIndex = cursor1.getColumnIndex("weight");
+        int weatherIndex = cursor1.getColumnIndex("weather");
+
+
+        if(cursor1.getCount() <= 0){
+            cursor1 = null;
+        }else {
+            foodList.add(cursor1.getString(categoryIndex));
+            while (cursor1.moveToNext()) {
+
+                foodList.add(cursor1.getString(categoryIndex));
+                Log.d("DBHandler", "테이블 갯수 :" + cursor1.getCount() + " 카테고리" + cursor1.getString(categoryIndex) + " 가중치 " + cursor1.getInt(weightIndex));
+
+            }
+
+            return foodList;
+        }
+
+        cursor2 = db.rawQuery(defaultSql, null);
+
+        cursor2.moveToFirst();
+
+        int categoryIndex1 = cursor2.getColumnIndex("category");
+        int weightIndex1 = cursor2.getColumnIndex("max(weight)");
+
+            if(cursor2.getCount() <= 0){
+                    return null;
+            }else{
+                foodList.add(cursor2.getString(categoryIndex1));
+                while (cursor2.moveToNext()) {
+
+                    foodList.add(cursor2.getString(categoryIndex1));
+                    Log.d("DBHandler", "테이블 갯수 :" + cursor2.getCount() + " 카테고리" + cursor2.getString(categoryIndex1) + " 가중치 " + cursor2.getInt(weightIndex1));
+
+                }
+            }
+
+            return foodList;
+    }
+
 
     public boolean insertAnni(Anni ani){
 
@@ -175,73 +390,8 @@ public class DBHandler {
         return false;
     }
 
-    //category TEXT, weather TEXT, weight INTEGER
-    public void stored_data_insert(){
-        //응용할 수 있지 않을까 해서 날씨가 흐리거나 맑거나 어떤 음식을 먹는다 , 어떤 카테고리의 음식을 먹는것
-        //시간이 지나면 어떤 날씨엔 어떤 카테고리의 음식을 많이 먹더라라는 정보가 쌓인다
-        //날씨와 시간이 다른 속성으로 정리 돼 있기 때문에 단지 카테고리로만 검색하는 지금은 쓰기 어렵다.
-        //이런 날씨엔 이런 카테고리의 음식을 많이 먹더라 ---> 이게 주 목적
-        //이런 날씨가 이벤트 이런 날씨가 됐을때 --> 이런 날씨로 검색하고 이런 날씨에 해당하는 카테고리로 분류
-        //이런 날씨에 해당하는 카테고리의 종류 중에서 카테고리 weighting을 순차적으로 정렬해서 넘겨준다, sqlite는 seq로 구분하기 때문에 상관없다.
-        //같은 카테고리 여러 날씨 여러 시간 플래그들
-
-        String weather = "맑음";
-        String endOfCategory = endCategory(item.category);
-
-        int weight = 1;
-
-        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
-
-        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
-        if ( beforeWeight != 0 ){
-
-            updateStoredData(endOfCategory, beforeWeight + 1 );
-
-        }else{
-
-            try{
-                db.execSQL("INSERT INTO stored_data VALUES(null, '" + endOfCategory + "','" + weather + "'," + weight + ");");
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    public void stored_data_delete(){
 
 
-        //응용할 수 있지 않을까 해서 날씨가 흐리거나 맑거나 어떤 음식을 먹는다 , 어떤 카테고리의 음식을 먹는것
-        //시간이 지나면 어떤 날씨엔 어떤 카테고리의 음식을 많이 먹더라라는 정보가 쌓인다
-        //날씨와 시간이 다른 속성으로 정리 돼 있기 때문에 단지 카테고리로만 검색하는 지금은 쓰기 어렵다.
-        //이런 날씨엔 이런 카테고리의 음식을 많이 먹더라 ---> 이게 주 목적
-        //이런 날씨가 이벤트 이런 날씨가 됐을때 --> 이런 날씨로 검색하고 이런 날씨에 해당하는 카테고리로 분류
-        //이런 날씨에 해당하는 카테고리의 종류 중에서 카테고리 weighting을 순차적으로 정렬해서 넘겨준다, sqlite는 seq로 구분하기 때문에 상관없다.
-
-
-        //1, 현재 아이템이 선택됐다면 현재 선택된 아이템의 카테고리검사와 더불어 현재 날씨를 체크한다.
-        //2, 현재 날씨에 해당하는 현재 카테고리데이터가 내부 데이터베이스에 저장 돼 있는지 검사
-        //3, 저장 돼 있지 않으면 가중치 1로 저장
-        //4, 저장 돼 있다면 가중치를 가져와 +1
-        // 맞춤추천은 날씨로 먼저 검색후 카테고리 가중치순으로 정렬
-        // 이러한 순으로 아침 점심 저녁과 같은 추가적인 방법 가능
-
-        String weather = "맑음";
-        String endOfCategory = endCategory(item.getCategory());
-
-        int weight = 1;
-
-        int beforeWeight = selectFavorDataWithWhere(endOfCategory);
-        Log.d("DBHandler", "beforeWeight : " + beforeWeight);
-
-        if( beforeWeight == 0){
-            beforeWeight = weight;
-        }
-        updateStoredData(endOfCategory, beforeWeight - 1 );
-
-
-
-    }
 
     public boolean deleteFavorItem(FavorItem far){
         try{
@@ -364,85 +514,6 @@ public class DBHandler {
         return null;
     }
 
-    public String[] selectFood(){
-
-        String recommendList[] = new String[10];
-        String sql = "select * from stored_data order by weight desc;";
-        Cursor cursor = null;
-        cursor = db.rawQuery(sql, null);
-        cursor.moveToFirst();
-
-        int category = cursor.getColumnIndex("category");
-        int weight = cursor.getColumnIndex("weight");
-        int weather = cursor.getColumnIndex("weather");
-
-
-
-        if(cursor.getCount() <=0){
-                for (int i = 0; i < 10; i++){
-                    recommendList[i] ="empty";
-                }
-        }else{
-            int i  = 1 ;
-            recommendList[0] = cursor.getString(category);
-            Log.d("DBHandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
-            while(cursor.moveToNext()){
-
-                recommendList[i] = cursor.getString(category);
-                Log.d("DBHandler","테이블 갯수 :"+ cursor.getCount() + " 카테고리" + cursor.getString(category) + " 가중치 " + cursor.getInt(weight) );
-
-                i++;
-                if ( i == 10){
-                    break;
-                }
-            }
-
-            for (int j = i; i < 10; i++){
-                recommendList[i] ="empty";
-            }
-        }
-
-        return recommendList;
-    }
-
-
-    public boolean updateStoredData(String category, int afterweight){
-
-        try{
-            db.execSQL("UPDATE stored_data SET " +
-                    "weight="+afterweight+" WHERE category='"+category+"';");
-
-        }catch (Exception e){
-            return false;
-        }
-        return true;
-
-    }
-
-    public int selectFavorDataWithWhere(String category){
-
-
-        Cursor cursor= null;
-        cursor = db.rawQuery("select * from stored_data where category ='"+ category+ "';", null);
-        cursor.moveToFirst();
-
-        if ( cursor.getCount() <= 0 ){
-            return 0;
-        }
-
-        //category TEXT, weather TEXT, weight INTEGER
-        int category1 = cursor.getColumnIndex("category");
-        int weather = cursor.getColumnIndex("weather");
-        int weight = cursor.getColumnIndex("weight");
-
-        int beforeweight = cursor.getInt(weight);
-
-
-
-
-        return beforeweight;
-
-    }
 
     public String endCategory(String inputString){
 

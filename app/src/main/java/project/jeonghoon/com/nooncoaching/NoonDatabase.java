@@ -33,7 +33,9 @@ public class NoonDatabase extends SQLiteOpenHelper {
                 "title TEXT, category TEXT, imageUrl TEXT, phone TEXT, address TEXT, latitude REAL, longitude REAL);";
         String CREATE_SQL6 = "CREATE TABLE IF NOT EXISTS stored_data" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                "category TEXT, weather TEXT, weight INTEGER);";
+                "category TEXT, weather TEXT, address TEXT, weight INTEGER);";
+
+        //address TEXT, weather TEXT,
 
         try {
             db.execSQL(CREATE_SQL1);

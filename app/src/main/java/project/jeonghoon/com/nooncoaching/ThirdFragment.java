@@ -29,6 +29,7 @@ public class ThirdFragment extends Fragment {
     ArrayList<FavorItem> FavorItems;
     String defaultImageUrl = "http://222.116.135.79:8080/Noon/images/noon.png";
     String address = "";
+    String weather ="";
     private static final String LOG_TAG = "ThirdFragment";
 
 
@@ -47,7 +48,7 @@ public class ThirdFragment extends Fragment {
         // set adapter
         //adapter = new FavorItemAdapter(getActivity().getApplicationContext());
         ItemList = new ArrayList<>();
-        adapter = new ItemsAdapter(getActivity(), ItemList);
+        adapter = new ItemsAdapter(getActivity(), ItemList, weather, address);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -56,7 +57,7 @@ public class ThirdFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         address = getArguments().getString("address");
-
+        weather = getArguments().getString("weather");
         Log.d(LOG_TAG,"address "+ address);
 
         prepareItems(0);

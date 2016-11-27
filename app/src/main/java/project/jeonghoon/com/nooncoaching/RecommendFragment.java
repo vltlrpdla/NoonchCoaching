@@ -18,8 +18,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+// prepareItem으로 수정하기
+// 오늘에 해당하는 기념일이 있는지 검색하려나 보다
+/**long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat CurMonthFormat = new SimpleDateFormat("MM");
+        SimpleDateFormat CurDayFormat = new SimpleDateFormat("dd");
+        int month,day;
+        month = Integer.parseInt(CurMonthFormat.format(date));
+        day = Integer.parseInt(CurDayFormat.format(date));
+        DBHandler dh = DBHandler.open(MainActivity.mContext);
+        Log.i("cccc",""+month+" "+day);
+        ArrayList<Anni> Annis = dh.selectAnniWithWhere(month-1, day);
+        String food_nameAnniv = "";
+ */
 
 public class RecommendFragment extends Fragment {
 
@@ -40,9 +57,11 @@ public class RecommendFragment extends Fragment {
     RecyclerView.LayoutManager mLayoutManager;
     private static final String LOG_TAG = "RecommendFragment";
     int clickedNumber = 0;
-    String foodList[];
+    List<String> foodList = new ArrayList<String>();
+    List<String> anniFoodList = new ArrayList<String>();
     int start = 0;
     DBHandler dh;
+    String address,weather;
 
     //
 
@@ -63,16 +82,17 @@ public class RecommendFragment extends Fragment {
             //rA.registerplace();
         }
 
-        dh = DBHandler.open(MainActivity.mContext);
+        address = getArguments().getString("address");
+        weather = getArguments().getString("weather");
 
-        foodList = new String[10];
+        dh = DBHandler.open(MainActivity.mContext);
 
         gps = new GpsInfo(getActivity());
         latitude = gps.getLatitude();
         longitude = gps.getLongitude();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         ItemList = new ArrayList<>();
-        adapter = new ItemsAdapter(getActivity(), ItemList);
+        adapter = new ItemsAdapter(getActivity(), ItemList, weather, address);
         mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
@@ -88,7 +108,7 @@ public class RecommendFragment extends Fragment {
 
                 if (isLastItem && newState == RecyclerView.SCROLL_STATE_IDLE && page <= 3) {
 
-                    checkTypeByTabNumber(clickedNumber);
+                    prepareItems(clickedNumber);
 
                     Log.d(LOG_TAG, "스크롤의 끝");
                 }
@@ -114,8 +134,101 @@ public class RecommendFragment extends Fragment {
             }
         });
 
+        //급하게 함 수정이 필요한 코드
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat CurMonthFormat = new SimpleDateFormat("MM");
+        SimpleDateFormat CurDayFormat = new SimpleDateFormat("dd");
+        int month,day;
+        month = Integer.parseInt(CurMonthFormat.format(date));
+        day = Integer.parseInt(CurDayFormat.format(date));
+        Log.i("cccc",""+month+" "+day);
+        ArrayList<Anni> Annis = dh.selectAnniWithWhere(month-1, day);
 
-        prepareItems(0);
+        if ( Annis == null ){
+
+            Log.d(LOG_TAG,"없다면 여기");
+            String today_S,today_L,nowDate;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            nowDate = sdf.format(date);
+            LunarCalendar lunar = new LunarCalendar();
+            today_S = nowDate.substring(4, 8);
+            today_L = lunar.toLunar(nowDate).toString().substring(4, 8);
+
+            MyDbSearcher myDbLunarSearcher = new MyDbSearcher();
+
+            myDbLunarSearcher.getFoodListByDate(getContext(), "L", today_L, new OnFinishAnnivSearchListner() {
+                @Override
+                public void onSuccess(List<String> foodList) {
+                    addFoodList(foodList);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            prepareItems(0);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
+
+            MyDbSearcher myDbSolarSearcher = new MyDbSearcher();
+
+            myDbSolarSearcher.getFoodListByDate(getContext(), "S", today_S, new OnFinishAnnivSearchListner() {
+                @Override
+                public void onSuccess(List<String> foodList) {
+                    addFoodList(foodList);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            prepareItems(0);
+                        }
+                    });
+                    //add FoodList
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
+
+        }else{
+            Log.d(LOG_TAG,"설정된 기념일이 있으니 여기로 와야지");
+            String category = Annis.get(0).getCate();
+            try {
+                String query = URLEncoder.encode(category, "utf-8");
+                MyDbSearcher myUserDbSearcher = new MyDbSearcher();
+
+                myUserDbSearcher.getFoodListByUserAnniv(getContext(), "clear", query, new OnFinishAnnivSearchListner() {
+                    @Override
+                    public void onSuccess(List<String> foodList) {
+                        addFoodList(foodList);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                prepareItems(0);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+
+
+        //prepareItems(0);
 
         TabLayout tabs = (TabLayout) rootView.findViewById(R.id.tabs);
         tabs.addTab(tabs.newTab().setText("기념일"));
@@ -137,26 +250,51 @@ public class RecommendFragment extends Fragment {
         switch (type) {
 
             case 0:
-                /**
-                 * 세가지의 경우가 있을 수 있다.
-                 * 첫번째는 해당하는 날짜에 설정한 기념일과 설정하지 않았지만 연중 기념일 그리고 아예 없는 경우
-                 * 아예 없는 경우는 차피 처리 할 게 없음
-                 * 해당하는 날에 설정한 기념일이 있다 --> 해당하는 기념일 생일 연인 기념일 이러한 anniversary 속성으로 외부Db에 질의
-                 * 질의 후에 날라오는 음식의 이름들을 맞춤추천과 똑같이 display
-                 * 해당하는 날에 설정된 기념일은 없지만 연중 기념일이 있다면 연중 기념일속성에 매칭되는 음식은 하나 고로 하나의 음식에 해당하는 아이템뷰를 보여주면 된다.--검색이 안될시 처리해야함
-                 * 해당하는 날에 설정된 기념일과 연중기념일이 동시에 있다면?
-                 * 연중 기념일과 해당하는 기념일의 리스트를 보여주고 해당하는 리스트뷰가 클릭 될 경우에 검색
-                 * 해당하는 기념일의 날이 됐을 경우에 알림. -> 보류
-                 */
+
+                String anniQuery;
+                //for (int i = 0; i < itemList.size(); i++)
+
+                if ( start < anniFoodList.size()){
+                    anniQuery = anniFoodList.get(start);
+                }else{
+                    anniQuery = "empty";
+                }
+
+                if ( anniQuery.equals("empty") ) {
+                    showToast("더이상 추천할 아이템이 없습니다.");
+                    break;
+                }else {
+                    Log.d(LOG_TAG, "상태바뀜1" + anniQuery);
+
+                    Searcher searcher2 = new Searcher();
+                    searcher2.searchKeyword(MainActivity.mContext, anniQuery, latitude, longitude, radius, page, MapApiConst.DAUM_MAPS_ANDROID_APP_API_KEY, new OnFinishSearchListener() {
+                        @Override
+                        public void onSuccess(List<Item> itemList) {
+                            showResult(itemList);
+                        }
+
+                        @Override
+                        public void onFail() {
+                            showToast("검색된 아이템이 없습니다.");
+                        }
+                    });
+                }
+
+                start++;
+
                 break;
 
             case 1:
                 //처음에 내부 db에 질의 후에 키워드가 있는지 없는지 ...--- 날씨와 위치를 가져오는것이 이미 완료 돼 있어야함 ---로딩 시간을 주고 날씨와 위치를 가져오는것이 확실시 돼야
                 //확인하는 코드
-                if (start >= 10)
-                    break;
+                String query;
+                //for (int i = 0; i < itemList.size(); i++)
 
-                String query = foodList[start];
+                if ( start < foodList.size()){
+                    query = foodList.get(start);
+                }else{
+                    query = "empty";
+                }
 
                 if ( query.equals("empty") ) {
                     showToast("더이상 추천할 아이템이 없습니다.");
@@ -212,6 +350,12 @@ public class RecommendFragment extends Fragment {
 
     }
 
+    private void addFoodList(List<String> getFoodList){
+        for ( int i = 0; i < getFoodList.size(); i++){
+            String foodName = getFoodList.get(i);
+            anniFoodList.add(foodName);
+        }
+    }
     private void showResult(List<Item> itemList) {
 
 
@@ -344,7 +488,11 @@ public class RecommendFragment extends Fragment {
                 prepareItems(0);
                 break;
             case 1:
-                foodList = dh.selectFood();
+                foodList = dh.selectFood(weather,address);
+                if(foodList == null){
+                    showToast("맞춤 추천 아이템이 없습니다.");
+                    break;
+                }
                 prepareItems(1);
                 break;
             case 2:

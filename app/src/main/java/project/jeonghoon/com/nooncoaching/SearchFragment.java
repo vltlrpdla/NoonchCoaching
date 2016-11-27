@@ -38,6 +38,7 @@ public class SearchFragment extends Fragment {
     private List<Item> ItemList;
     private EditText mEditTextQuery;
     private Button mButtonSearch;
+    String weather,address;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +51,8 @@ public class SearchFragment extends Fragment {
         mEditTextQuery = (EditText) rootView.findViewById(R.id.editTextQuery); // 검색창
         mButtonSearch = (Button) rootView.findViewById(R.id.buttonSearch); // 검색버튼
 
-
+        weather = getArguments().getString("weather");
+        address = getArguments().getString("address");
         //gps 사용
         gps = new GpsInfo(getActivity());
         latitude = gps.getLatitude();
@@ -59,7 +61,7 @@ public class SearchFragment extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
         ItemList = new ArrayList<>();
-        adapter = new ItemsAdapter(getActivity(), ItemList);
+        adapter = new ItemsAdapter(getActivity(), ItemList, weather, address);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(mLayoutManager);

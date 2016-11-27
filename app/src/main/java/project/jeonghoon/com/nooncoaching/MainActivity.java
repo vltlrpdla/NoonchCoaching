@@ -83,11 +83,14 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle argument = new Bundle();
         argument.putString("address",acceptedData[1]);
+        argument.putString("weather",acceptedData[0]);
 
 
         fragment1 = new RecommendFragment();
+        fragment1.setArguments(argument);
         //fragment2 = new Fragment2();
         searchFragment = new SearchFragment();
+        searchFragment.setArguments(argument);
         thirdFragment = new ThirdFragment();
         thirdFragment.setArguments(argument);
         //fragment4 = new Fragment4();

@@ -32,6 +32,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.MyViewHolder
     DBHandler dbHandler;
     boolean flag;
     private static final String LOG_TAG = "ItemsAdapter";
+    String weather,address;
 
 
 public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -53,9 +54,11 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public ItemsAdapter(Context mContext, List<Item> itemList) {
+    public ItemsAdapter(Context mContext, List<Item> itemList ,String weather, String address) {
         this.mContext = mContext;
         this.itemList = itemList;
+        this.weather = weather;
+        this.address = address;
     }
 
     public int getViewTypeCount(){
@@ -159,8 +162,8 @@ class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
                 }else{
                     Log.d(LOG_TAG, "입력 실패");
                 }
-                dbHandler.stored_data_insert();
-                dbHandler.selectFood();
+                dbHandler.stored_data_insert(weather,address);
+                dbHandler.selectFood(weather,address);
                 dbHandler.close();
                 return true;
             case R.id.action_go_to_summarization:
@@ -180,7 +183,7 @@ class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
                     Log.d(LOG_TAG, "삭제 실패");
                 }
                 dbHandler.stored_data_delete();
-                dbHandler.selectFood();
+                dbHandler.selectFood(weather,address);
                 dbHandler.close();
                 delete(position);
                 Toast.makeText(mContext, "Delete to favorite", Toast.LENGTH_SHORT).show();
